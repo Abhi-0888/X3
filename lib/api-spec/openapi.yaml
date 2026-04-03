@@ -3,20 +3,36 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Astra-Eye Construction Intelligence API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: dashboard
+    description: Dashboard summary and digital pulse
+  - name: module-a
+    description: Module A - Drone-BIM Navigator structural analysis
+  - name: module-b
+    description: Module B - 360 Guardian safety monitoring
+  - name: module-c
+    description: Module C - Activity Analyst labor efficiency
+  - name: alerts
+    description: System alerts and notifications
+  - name: reports
+    description: AI-generated audit reports
+  - name: workers
+    description: Worker management
+  - name: cameras
+    description: Camera feeds and zones
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +40,411 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /dashboard/pulse:
+    get:
+      operationId: getDashboardPulse
+      tags: [dashboard]
+      summary: Get the Digital Pulse summary
+      responses:
+        "200":
+          description: Dashboard digital pulse
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DigitalPulse"
+
+  /dashboard/metrics:
+    get:
+      operationId: getDashboardMetrics
+      tags: [dashboard]
+      summary: Get live KPI metrics
+      responses:
+        "200":
+          description: Real-time metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardMetrics"
+
+  /module-a/scans:
+    get:
+      operationId: listDroneScans
+      tags: [module-a]
+      summary: List all drone BIM scans
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: List of drone scans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DroneScan"
+    post:
+      operationId: createDroneScan
+      tags: [module-a]
+      summary: Trigger a new drone scan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDroneScanBody"
+      responses:
+        "201":
+          description: Scan created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DroneScan"
+
+  /module-a/scans/{scanId}:
+    get:
+      operationId: getDroneScan
+      tags: [module-a]
+      summary: Get a single drone scan with anomalies
+      parameters:
+        - name: scanId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Drone scan detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DroneScan"
+
+  /module-a/anomalies:
+    get:
+      operationId: listAnomalies
+      tags: [module-a]
+      summary: List structural anomalies
+      parameters:
+        - name: severity
+          in: query
+          schema:
+            type: string
+            enum: [critical, high, medium, low]
+        - name: resolved
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of anomalies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StructuralAnomaly"
+
+  /module-a/anomalies/{anomalyId}/resolve:
+    post:
+      operationId: resolveAnomaly
+      tags: [module-a]
+      summary: Mark anomaly as resolved
+      parameters:
+        - name: anomalyId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Anomaly resolved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StructuralAnomaly"
+
+  /module-a/progress:
+    get:
+      operationId: getConstructionProgress
+      tags: [module-a]
+      summary: Get construction progress data
+      responses:
+        "200":
+          description: Progress timeline
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConstructionProgress"
+
+  /module-b/safety-score:
+    get:
+      operationId: getSafetyScore
+      tags: [module-b]
+      summary: Get current site safety health score
+      responses:
+        "200":
+          description: Safety score
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SafetyScore"
+
+  /module-b/ppe-violations:
+    get:
+      operationId: listPPEViolations
+      tags: [module-b]
+      summary: List PPE violations
+      parameters:
+        - name: resolved
+          in: query
+          schema:
+            type: boolean
+        - name: cameraId
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: PPE violations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PPEViolation"
+
+  /module-b/zone-breaches:
+    get:
+      operationId: listZoneBreaches
+      tags: [module-b]
+      summary: List danger zone breach events
+      responses:
+        "200":
+          description: Zone breaches
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ZoneBreach"
+
+  /module-b/cameras:
+    get:
+      operationId: listCameras
+      tags: [cameras]
+      summary: List all camera feeds and their status
+      responses:
+        "200":
+          description: Camera list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Camera"
+
+  /module-b/danger-zones:
+    get:
+      operationId: listDangerZones
+      tags: [module-b]
+      summary: List defined danger zones
+      responses:
+        "200":
+          description: Danger zones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DangerZone"
+
+  /module-c/efficiency:
+    get:
+      operationId: getTeamEfficiency
+      tags: [module-c]
+      summary: Get team efficiency summary
+      responses:
+        "200":
+          description: Team efficiency
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamEfficiency"
+
+  /module-c/workers:
+    get:
+      operationId: listWorkers
+      tags: [workers]
+      summary: List all workers with current status
+      responses:
+        "200":
+          description: Workers list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Worker"
+
+  /module-c/workers/{workerId}:
+    get:
+      operationId: getWorker
+      tags: [workers]
+      summary: Get worker detail with activity log
+      parameters:
+        - name: workerId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Worker detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Worker"
+
+  /module-c/idle-alerts:
+    get:
+      operationId: listIdleAlerts
+      tags: [module-c]
+      summary: List workers flagged as idle
+      responses:
+        "200":
+          description: Idle alerts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/IdleAlert"
+
+  /module-c/activity-timeline:
+    get:
+      operationId: getActivityTimeline
+      tags: [module-c]
+      summary: Get hourly activity data for charts
+      responses:
+        "200":
+          description: Activity timeline
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityDataPoint"
+
+  /alerts:
+    get:
+      operationId: listAlerts
+      tags: [alerts]
+      summary: List all system alerts
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [DEVIATION, PPE_VIOLATION, ZONE_BREACH, IDLE_WORKER, PROGRESS]
+        - name: acknowledged
+          in: query
+          schema:
+            type: boolean
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: Alerts list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Alert"
+
+  /alerts/{alertId}/acknowledge:
+    post:
+      operationId: acknowledgeAlert
+      tags: [alerts]
+      summary: Acknowledge an alert
+      parameters:
+        - name: alertId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Alert acknowledged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Alert"
+
+  /reports:
+    get:
+      operationId: listReports
+      tags: [reports]
+      summary: List generated audit reports
+      responses:
+        "200":
+          description: Reports list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AuditReport"
+    post:
+      operationId: generateReport
+      tags: [reports]
+      summary: Generate a new AI audit report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateReportBody"
+      responses:
+        "201":
+          description: Report generated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditReport"
+
+  /reports/{reportId}:
+    get:
+      operationId: getReport
+      tags: [reports]
+      summary: Get a specific audit report
+      parameters:
+        - name: reportId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Audit report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditReport"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +452,592 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    DigitalPulse:
+      type: object
+      properties:
+        safetyScore:
+          type: number
+        deviationsFound:
+          type: integer
+        progressPercent:
+          type: number
+        activeWorkers:
+          type: integer
+        idleWorkers:
+          type: integer
+        pendingAlerts:
+          type: integer
+        lastScanTime:
+          type: string
+        moduleAStatus:
+          type: string
+          enum: [active, idle, scanning, error]
+        moduleBStatus:
+          type: string
+          enum: [active, idle, scanning, error]
+        moduleCStatus:
+          type: string
+          enum: [active, idle, scanning, error]
+      required:
+        - safetyScore
+        - deviationsFound
+        - progressPercent
+        - activeWorkers
+        - idleWorkers
+        - pendingAlerts
+        - lastScanTime
+        - moduleAStatus
+        - moduleBStatus
+        - moduleCStatus
+
+    DashboardMetrics:
+      type: object
+      properties:
+        structuralAccuracy:
+          type: number
+        ppeComplianceRate:
+          type: number
+        laborEfficiencyScore:
+          type: number
+        totalDeviationsToday:
+          type: integer
+        totalViolationsToday:
+          type: integer
+        costImpactEstimate:
+          type: number
+        progressDelta:
+          type: number
+        floorProgress:
+          type: array
+          items:
+            $ref: "#/components/schemas/FloorProgress"
+      required:
+        - structuralAccuracy
+        - ppeComplianceRate
+        - laborEfficiencyScore
+        - totalDeviationsToday
+        - totalViolationsToday
+        - costImpactEstimate
+        - progressDelta
+        - floorProgress
+
+    FloorProgress:
+      type: object
+      properties:
+        floor:
+          type: string
+        todayPct:
+          type: number
+        yesterdayPct:
+          type: number
+        delta:
+          type: number
+      required: [floor, todayPct, yesterdayPct, delta]
+
+    DroneScan:
+      type: object
+      properties:
+        id:
+          type: integer
+        scanTime:
+          type: string
+        droneId:
+          type: string
+        status:
+          type: string
+          enum: [in_progress, completed, failed]
+        flightPath:
+          type: string
+        totalFrames:
+          type: integer
+        anomalyCount:
+          type: integer
+        progressPct:
+          type: number
+        anomalies:
+          type: array
+          items:
+            $ref: "#/components/schemas/StructuralAnomaly"
+      required:
+        - id
+        - scanTime
+        - droneId
+        - status
+        - flightPath
+        - totalFrames
+        - anomalyCount
+        - progressPct
+
+    CreateDroneScanBody:
+      type: object
+      properties:
+        droneId:
+          type: string
+        flightPath:
+          type: string
+      required: [droneId, flightPath]
+
+    StructuralAnomaly:
+      type: object
+      properties:
+        id:
+          type: integer
+        scanId:
+          type: integer
+        elementId:
+          type: string
+        elementType:
+          type: string
+          enum: [column, wall, beam, slab, foundation]
+        deviationPct:
+          type: number
+        deviationDescription:
+          type: string
+        zone:
+          type: string
+        severity:
+          type: string
+          enum: [critical, high, medium, low]
+        resolved:
+          type: boolean
+        detectedAt:
+          type: string
+        resolvedAt:
+          type: string
+          nullable: true
+        worldCoords:
+          $ref: "#/components/schemas/WorldCoords"
+      required:
+        - id
+        - scanId
+        - elementId
+        - elementType
+        - deviationPct
+        - deviationDescription
+        - zone
+        - severity
+        - resolved
+        - detectedAt
+
+    WorldCoords:
+      type: object
+      properties:
+        x:
+          type: number
+        y:
+          type: number
+        z:
+          type: number
+      required: [x, y, z]
+
+    ConstructionProgress:
+      type: object
+      properties:
+        overallPct:
+          type: number
+        dailyProgress:
+          type: array
+          items:
+            $ref: "#/components/schemas/DailyProgress"
+        elementBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/ElementProgress"
+      required: [overallPct, dailyProgress, elementBreakdown]
+
+    DailyProgress:
+      type: object
+      properties:
+        date:
+          type: string
+        progressPct:
+          type: number
+        deviations:
+          type: integer
+      required: [date, progressPct, deviations]
+
+    ElementProgress:
+      type: object
+      properties:
+        type:
+          type: string
+        builtCount:
+          type: integer
+        totalCount:
+          type: integer
+        pct:
+          type: number
+      required: [type, builtCount, totalCount, pct]
+
+    SafetyScore:
+      type: object
+      properties:
+        overall:
+          type: number
+        ppeCompliance:
+          type: number
+        zoneCompliance:
+          type: number
+        activeViolations:
+          type: integer
+        resolvedToday:
+          type: integer
+        workersByStatus:
+          type: object
+          properties:
+            compliant:
+              type: integer
+            violating:
+              type: integer
+            unknown:
+              type: integer
+          required: [compliant, violating, unknown]
+      required:
+        - overall
+        - ppeCompliance
+        - zoneCompliance
+        - activeViolations
+        - resolvedToday
+        - workersByStatus
+
+    PPEViolation:
+      type: object
+      properties:
+        id:
+          type: integer
+        workerId:
+          type: integer
+        workerName:
+          type: string
+        cameraId:
+          type: string
+        cameraName:
+          type: string
+        missingItems:
+          type: array
+          items:
+            type: string
+            enum: [helmet, vest, gloves, boots, harness]
+        severity:
+          type: string
+          enum: [critical, high, medium]
+        detectedAt:
+          type: string
+        resolved:
+          type: boolean
+      required:
+        - id
+        - workerId
+        - workerName
+        - cameraId
+        - cameraName
+        - missingItems
+        - severity
+        - detectedAt
+        - resolved
+
+    ZoneBreach:
+      type: object
+      properties:
+        id:
+          type: integer
+        workerId:
+          type: integer
+        workerName:
+          type: string
+        zoneId:
+          type: integer
+        zoneName:
+          type: string
+        entryTime:
+          type: string
+        exitTime:
+          type: string
+          nullable: true
+        duration:
+          type: integer
+          nullable: true
+          description: Duration in seconds
+        cameraId:
+          type: string
+      required:
+        - id
+        - workerId
+        - workerName
+        - zoneId
+        - zoneName
+        - entryTime
+        - cameraId
+
+    Camera:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        angle:
+          type: string
+          enum: [front, back, top, left, right]
+        status:
+          type: string
+          enum: [active, offline, maintenance]
+        location:
+          type: string
+        workersInFrame:
+          type: integer
+        lastFrame:
+          type: string
+      required: [id, name, angle, status, location, workersInFrame, lastFrame]
+
+    DangerZone:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+          enum: [crane_zone, edge_zone, electrical_zone, excavation, chemical_storage]
+        riskLevel:
+          type: string
+          enum: [critical, high, medium]
+        description:
+          type: string
+        active:
+          type: boolean
+      required: [id, name, type, riskLevel, description, active]
+
+    TeamEfficiency:
+      type: object
+      properties:
+        teamScore:
+          type: number
+        activeWorkers:
+          type: integer
+        idleWorkers:
+          type: integer
+        avgMovementScore:
+          type: number
+        topPerformers:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkerEfficiencySummary"
+        underperformers:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkerEfficiencySummary"
+      required:
+        - teamScore
+        - activeWorkers
+        - idleWorkers
+        - avgMovementScore
+        - topPerformers
+        - underperformers
+
+    WorkerEfficiencySummary:
+      type: object
+      properties:
+        workerId:
+          type: integer
+        workerName:
+          type: string
+        efficiencyScore:
+          type: number
+        movementScore:
+          type: number
+        idleMinutes:
+          type: integer
+      required: [workerId, workerName, efficiencyScore, movementScore, idleMinutes]
+
+    Worker:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        role:
+          type: string
+        zone:
+          type: string
+        status:
+          type: string
+          enum: [active, idle, break, offline]
+        efficiencyScore:
+          type: number
+        movementScore:
+          type: number
+        idleMinutes:
+          type: integer
+        ppeStatus:
+          type: string
+          enum: [compliant, violation, unknown]
+        currentCamera:
+          type: string
+        joinedAt:
+          type: string
+        activityLog:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkerActivity"
+      required:
+        - id
+        - name
+        - role
+        - zone
+        - status
+        - efficiencyScore
+        - movementScore
+        - idleMinutes
+        - ppeStatus
+        - currentCamera
+        - joinedAt
+
+    WorkerActivity:
+      type: object
+      properties:
+        time:
+          type: string
+        action:
+          type: string
+        duration:
+          type: integer
+        movementScore:
+          type: number
+      required: [time, action, duration, movementScore]
+
+    IdleAlert:
+      type: object
+      properties:
+        id:
+          type: integer
+        workerId:
+          type: integer
+        workerName:
+          type: string
+        idleDurationSeconds:
+          type: integer
+        zone:
+          type: string
+        detectedAt:
+          type: string
+        acknowledged:
+          type: boolean
+      required:
+        - id
+        - workerId
+        - workerName
+        - idleDurationSeconds
+        - zone
+        - detectedAt
+        - acknowledged
+
+    ActivityDataPoint:
+      type: object
+      properties:
+        hour:
+          type: string
+        activeWorkers:
+          type: integer
+        idleWorkers:
+          type: integer
+        avgMovement:
+          type: number
+        tasksCompleted:
+          type: integer
+      required: [hour, activeWorkers, idleWorkers, avgMovement, tasksCompleted]
+
+    Alert:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [DEVIATION, PPE_VIOLATION, ZONE_BREACH, IDLE_WORKER, PROGRESS]
+        severity:
+          type: string
+          enum: [critical, high, medium, low, info]
+        title:
+          type: string
+        message:
+          type: string
+        zone:
+          type: string
+        entityId:
+          type: integer
+          nullable: true
+        acknowledged:
+          type: boolean
+        createdAt:
+          type: string
+        acknowledgedAt:
+          type: string
+          nullable: true
+      required:
+        - id
+        - type
+        - severity
+        - title
+        - message
+        - zone
+        - acknowledged
+        - createdAt
+
+    AuditReport:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        generatedAt:
+          type: string
+        period:
+          type: string
+        structuralSummary:
+          type: string
+        safetySummary:
+          type: string
+        efficiencySummary:
+          type: string
+        costImpactEstimate:
+          type: number
+        riskLevel:
+          type: string
+          enum: [low, medium, high, critical]
+        recommendations:
+          type: array
+          items:
+            type: string
+        fullReport:
+          type: string
+      required:
+        - id
+        - title
+        - generatedAt
+        - period
+        - structuralSummary
+        - safetySummary
+        - efficiencySummary
+        - costImpactEstimate
+        - riskLevel
+        - recommendations
+        - fullReport
+
+    GenerateReportBody:
+      type: object
+      properties:
+        period:
+          type: string
+        includeModuleA:
+          type: boolean
+        includeModuleB:
+          type: boolean
+        includeModuleC:
+          type: boolean
+      required: [period]

@@ -1,0 +1,360 @@
+
+<style>
+.tab-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.tab{padding:6px 13px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:12px;cursor:pointer;background:transparent;color:var(--color-text-secondary);transition:all .15s}
+.tab.active{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary);font-weight:500}
+h3{font-size:15px;font-weight:500;margin:0 0 10px;color:var(--color-text-primary)}
+h4{font-size:13px;font-weight:500;margin:10px 0 5px;color:var(--color-text-primary)}
+p,li{font-size:13px;color:var(--color-text-secondary);line-height:1.6;margin:0}
+li{margin-bottom:3px}
+ul{padding-left:16px;margin:4px 0}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;margin-bottom:12px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.col{flex:1;min-width:150px}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:var(--border-radius-md);font-weight:500}
+.b-purple{background:#EEEDFE;color:#3C3489}
+.b-teal{background:#E1F5EE;color:#085041}
+.b-coral{background:#FAECE7;color:#712B13}
+.b-blue{background:#E6F1FB;color:#0C447C}
+.b-amber{background:#FAEEDA;color:#633806}
+.b-red{background:#FCEBEB;color:#791F1F}
+.b-green{background:#EAF3DE;color:#27500A}
+.b-gray{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.pill{display:inline-block;font-size:11px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:100px;padding:2px 8px;margin:2px;color:var(--color-text-primary)}
+.code{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px;font-family:var(--font-mono);color:var(--color-text-primary);line-height:1.8;margin:6px 0}
+.step{display:flex;gap:12px;padding:9px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.step:last-child{border-bottom:none}
+.snum{width:22px;height:22px;border-radius:50%;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--color-text-primary)}
+.alert-r{border:0.5px solid #F09595;background:#FCEBEB;color:#791F1F;border-radius:var(--border-radius-md);padding:6px 10px;font-size:12px;margin:4px 0;font-family:var(--font-mono)}
+.alert-g{border:0.5px solid #97C459;background:#EAF3DE;color:#27500A;border-radius:var(--border-radius-md);padding:6px 10px;font-size:12px;margin:4px 0;font-family:var(--font-mono)}
+.alert-a{border:0.5px solid #FAC775;background:#FAEEDA;color:#633806;border-radius:var(--border-radius-md);padding:6px 10px;font-size:12px;margin:4px 0;font-family:var(--font-mono)}
+.phase-block{border-left:3px solid var(--color-border-secondary);padding:10px 14px;margin-bottom:10px;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;background:var(--color-background-secondary)}
+.phase-a{border-left-color:#7F77DD}
+.phase-b{border-left-color:#1D9E75}
+.phase-c{border-left-color:#D85A30}
+.io-row{display:flex;gap:8px;align-items:flex-start;padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.io-row:last-child{border-bottom:none}
+.io-label{font-size:11px;color:var(--color-text-secondary);min-width:52px;padding-top:1px}
+.io-val{font-size:12px;color:var(--color-text-primary)}
+.metric-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}
+.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px;text-align:center}
+.mval{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.mlbl{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.section{}
+@media(max-width:500px){.row{flex-direction:column}.metric-grid{grid-template-columns:1fr}}
+</style>
+
+<div style="padding:1rem 0">
+<div style="margin-bottom:18px">
+  <div style="font-size:20px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px">Astra-Eye Construction Intelligence</div>
+  <p>Multi-agent spatial AI audit system — full technical blueprint</p>
+</div>
+
+<div class="tab-bar">
+  <button class="tab active" onclick="show('overview',this)">Overview</button>
+  <button class="tab" onclick="show('modA',this)">Module A — Drone-BIM</button>
+  <button class="tab" onclick="show('modB',this)">Module B — Guardian</button>
+  <button class="tab" onclick="show('modC',this)">Module C — Analyst</button>
+  <button class="tab" onclick="show('phases',this)">Build phases</button>
+  <button class="tab" onclick="show('stack',this)">Tech stack</button>
+</div>
+
+<div id="overview" class="section">
+  <div class="metric-grid">
+    <div class="metric"><div class="mval">3</div><div class="mlbl">AI engine modules</div></div>
+    <div class="metric"><div class="mval">5</div><div class="mlbl">Camera angles</div></div>
+    <div class="metric"><div class="mval">360°</div><div class="mlbl">Safety coverage</div></div>
+  </div>
+  <div class="card">
+    <h3>The core problem — information asynchrony</h3>
+    <div class="row">
+      <div class="col">
+        <h4>Structural deviation</h4>
+        <p>Beam/wall placement errors go undetected for days. Rework compounds silently.</p>
+      </div>
+      <div class="col">
+        <h4>Safety blindspots</h4>
+        <p>Fixed cameras have limited angles. Manual inspections are intermittent.</p>
+      </div>
+      <div class="col">
+        <h4>Productivity opacity</h4>
+        <p>Managers can't quantify tool-time vs idle-time. Labor forecasts are guesswork.</p>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>System output — the "Digital Pulse"</h3>
+    <div class="row">
+      <div class="col">
+        <div class="io-row"><div class="io-label">Module A</div><div class="io-val">Geometric anomaly map — what % of wall built today vs yesterday, which column is misaligned and by how much</div></div>
+        <div class="io-row"><div class="io-label">Module B</div><div class="io-val">Live safety health score — per-worker PPE status, which worker entered which danger zone</div></div>
+        <div class="io-row"><div class="io-label">Module C</div><div class="io-val">Individual + team efficiency scores — idle workers flagged, active labor quantified</div></div>
+      </div>
+      <div class="col">
+        <div class="io-row"><div class="io-label">Dashboard</div><div class="io-val">Streamlit: 4-pane live feed, progress slider, anomaly log, real-time metric cards</div></div>
+        <div class="io-row"><div class="io-label">Report</div><div class="io-val">Claude API generates structured PDF: deviations found, safety %, efficiency %, cost impact estimate</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modA" class="section">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+    <h3 style="margin:0">Module A — Drone-BIM Navigator</h3>
+    <span class="badge b-purple">Progress &amp; accuracy</span>
+  </div>
+  <div class="card">
+    <h4>Concept</h4>
+    <p>An AI-powered drone (simulated in Twinmotion/UE5) performs a daily auto-scan of the construction site. It carries a model trained on the 3D dataset — the "Ground Truth." Each live frame is compared against the 3D prototype's exact coordinates using point cloud alignment or voxel-based comparison to detect structural deviations and measure daily progress.</p>
+  </div>
+  <div class="card">
+    <h4>Algorithm skeleton — step by step</h4>
+    <div class="step"><div class="snum">1</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">Frame extraction</div><p>Pull every Nth frame from drone video feed using OpenCV <span style="font-family:var(--font-mono);font-size:12px">cv2.VideoCapture</span>. N=5 gives ~6 FPS at real-time, enough for structural comparison.</p></div></div>
+    <div class="step"><div class="snum">2</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">Reference image load</div><p>Load the "Master 3D Frame" — a rendered screenshot from UE5/Twinmotion at the same drone camera angle. This is the ground truth for pixel-level comparison.</p></div></div>
+    <div class="step"><div class="snum">3</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">Feature matching — ORB/SIFT</div><p>Apply ORB (fast) or SIFT (accurate) keypoint detector on both frames. Use BFMatcher or FLANN to find corresponding feature points between live frame and master frame.</p>
+    <div class="code">orb = cv2.ORB_create()<br>kp1, des1 = orb.detectAndCompute(frame_live, None)<br>kp2, des2 = orb.detectAndCompute(frame_master, None)<br>matches = bf.match(des1, des2)<br>matches = sorted(matches, key=lambda x: x.distance)</div></div></div>
+    <div class="step"><div class="snum">4</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">Homography + coordinate mapping</div><p>Use top N matches to compute homography matrix H (real frame → model frame). Apply <span style="font-family:var(--font-mono);font-size:12px">cv2.findHomography</span> with RANSAC to filter outliers. Map pixel coordinates to world coordinates using the BIM JSON.</p></div></div>
+    <div class="step"><div class="snum">5</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">Pixel-diff deviation map</div><p>Warp live frame into master frame's perspective using H. Subtract: <span style="font-family:var(--font-mono);font-size:12px">diff = cv2.absdiff(warped_live, master)</span>. Threshold diff — pixels above threshold highlighted RED on the output overlay. These are the anomaly zones.</p></div></div>
+    <div class="step"><div class="snum">6</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">Deviation alert logic</div><p>Calculate anomaly area as % of total frame. If anomaly_area &gt; 5% threshold → trigger deviation alert with element ID from BIM JSON lookup. Calculate progress delta vs yesterday's baseline.</p>
+    <div class="code">deviation_pct = (anomaly_pixels / total_pixels) * 100<br>if deviation_pct > THRESHOLD:<br>&nbsp;&nbsp;alerts.append({"type":"DEVIATION","element":element_id,"delta":deviation_pct})</div></div></div>
+  </div>
+  <div class="row">
+    <div class="col card">
+      <h4>Inputs</h4>
+      <div class="io-row"><div class="io-label">Video</div><div class="io-val">Drone flythrough .mp4 (Twinmotion export)</div></div>
+      <div class="io-row"><div class="io-label">BIM JSON</div><div class="io-val">Element IDs + x/y/z world coords + type labels</div></div>
+      <div class="io-row"><div class="io-label">Master img</div><div class="io-val">UE5 rendered screenshot at drone angle</div></div>
+    </div>
+    <div class="col card">
+      <h4>Outputs</h4>
+      <div class="io-row"><div class="io-label">Overlay</div><div class="io-val">Live frame with red anomaly zones drawn</div></div>
+      <div class="io-row"><div class="io-label">Alert log</div><div class="io-val">JSON list of {element, deviation_pct, timestamp}</div></div>
+      <div class="io-row"><div class="io-label">Progress</div><div class="io-val">% wall built today vs yesterday baseline</div></div>
+    </div>
+  </div>
+  <h4>Sample dashboard alerts</h4>
+  <div class="alert-r">DEVIATION · Column B12 misaligned by 3° · Zone 4 · 09:14:22</div>
+  <div class="alert-r">DEVIATION · Wall W7 offset 5.2cm north · 09:31:07</div>
+  <div class="alert-g">PROGRESS · Floor 2 slab: 48% today vs 44% yesterday · +4%</div>
+  <h4>Tech</h4>
+  <span class="pill">Python 3.11</span><span class="pill">OpenCV 4.x</span><span class="pill">ORB / SIFT</span><span class="pill">NumPy</span><span class="pill">Twinmotion UE5</span><span class="pill">BIM JSON export</span>
+</div>
+
+<div id="modB" class="section">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+    <h3 style="margin:0">Module B — 360° Guardian</h3>
+    <span class="badge b-teal">Safety &amp; buffer zones</span>
+  </div>
+  <div class="card">
+    <h4>Concept</h4>
+    <p>A multi-camera array (Front, Back, Top, Left, Right) provides a spherical safety net across the entire site. Two sub-systems run in parallel: a YOLOv8/v11 PPE detector that checks every visible worker's compliance, and a dynamic buffer zone engine that defines danger perimeters around hazardous equipment and edges. Violations from either sub-system fire instant dashboard alarms.</p>
+  </div>
+  <div class="card">
+    <h4>Algorithm skeleton — Sub-system 1: PPE detection</h4>
+    <div class="step"><div class="snum">1</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">Multi-stream capture</div><p>Open 5 video streams simultaneously using OpenCV. In simulation: 5 Twinmotion videos (front/back/top/left/right angles). In production: 5 RTSP camera streams.</p>
+    <div class="code">caps = [cv2.VideoCapture(f"cam_{angle}.mp4") for angle in ["front","back","top","left","right"]]</div></div></div>
+    <div class="step"><div class="snum">2</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">YOLOv8 inference per frame</div><p>Run pre-trained YOLOv8-PPE model (weights from Roboflow or GitHub) on each frame from each camera. The model outputs class labels: <span style="font-family:var(--font-mono);font-size:12px">helmet, no_helmet, vest, no_vest, person</span>.</p>
+    <div class="code">model = YOLO("ppe_yolov8.pt")<br>results = model(frame, conf=0.5)<br>for box in results[0].boxes:<br>&nbsp;&nbsp;label = model.names[int(box.cls)]<br>&nbsp;&nbsp;conf = float(box.conf)</div></div></div>
+    <div class="step"><div class="snum">3</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">Per-worker compliance check</div><p>For each detected person, check if both <span style="font-family:var(--font-mono);font-size:12px">helmet</span> AND <span style="font-family:var(--font-mono);font-size:12px">vest</span> detections overlap their bounding box. If either is missing → mark as NON-COMPLIANT.</p></div></div>
+    <div class="step"><div class="snum">4</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">Safety score calculation</div><div class="code">safety_score = (compliant_count / total_workers) * 100<br>dashboard.update("safety_score", safety_score)</div></div></div>
+  </div>
+  <div class="card">
+    <h4>Algorithm skeleton — Sub-system 2: Dynamic buffer zones</h4>
+    <div class="step"><div class="snum">1</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">Define danger perimeters</div><p>Pre-define danger zones as pixel-coordinate polygons or rectangles in each camera view. These represent areas around cranes, open edges, excavations, or live machinery.</p>
+    <div class="code">DANGER_ZONES = {<br>&nbsp;&nbsp;"crane_zone": [(120,80), (320,80), (320,350), (120,350)],<br>&nbsp;&nbsp;"open_edge":  [(0,400), (680,400), (680,480), (0,480)]<br>}</div></div></div>
+    <div class="step"><div class="snum">2</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">Worker centroid extraction</div><p>Calculate the centroid (cx, cy) of each worker's bounding box from YOLO output: <span style="font-family:var(--font-mono);font-size:12px">cx = (x1+x2)/2, cy = (y1+y2)/2</span>.</p></div></div>
+    <div class="step"><div class="snum">3</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">Point-in-polygon check</div><p>Use <span style="font-family:var(--font-mono);font-size:12px">cv2.pointPolygonTest</span> to check if worker centroid is inside any danger zone polygon. If yes AND worker is not in the authorized list → fire alarm.</p>
+    <div class="code">for zone_name, polygon in DANGER_ZONES.items():<br>&nbsp;&nbsp;dist = cv2.pointPolygonTest(np.array(polygon), (cx,cy), False)<br>&nbsp;&nbsp;if dist >= 0:<br>&nbsp;&nbsp;&nbsp;&nbsp;trigger_alarm(worker_id, zone_name)</div></div></div>
+    <div class="step"><div class="snum">4</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">Visual overlay</div><p>Draw danger zone rectangles in semi-transparent red on the live feed. Draw GREEN bounding box around compliant workers. Draw RED around non-compliant workers. Label each worker with ID.</p></div></div>
+  </div>
+  <div class="row">
+    <div class="col card">
+      <h4>Inputs</h4>
+      <div class="io-row"><div class="io-label">Video</div><div class="io-val">5 camera angle feeds (F/B/T/L/R)</div></div>
+      <div class="io-row"><div class="io-label">YOLO weights</div><div class="io-val">ppe_yolov8.pt from Roboflow or GitHub</div></div>
+      <div class="io-row"><div class="io-label">Zone config</div><div class="io-val">Danger zone polygon coordinates per camera</div></div>
+    </div>
+    <div class="col card">
+      <h4>Outputs</h4>
+      <div class="io-row"><div class="io-label">Score</div><div class="io-val">Safety health score (0–100%)</div></div>
+      <div class="io-row"><div class="io-label">Alarm log</div><div class="io-val">Worker ID + violation type + zone + timestamp</div></div>
+      <div class="io-row"><div class="io-label">Overlay</div><div class="io-val">Red/green bounding boxes + zone boundaries</div></div>
+    </div>
+  </div>
+  <h4>Sample dashboard alerts</h4>
+  <div class="alert-r">SAFETY · Worker #09 — no helmet detected · Zone C · 10:02:44</div>
+  <div class="alert-r">SAFETY · Worker #03 — entered crane buffer zone · 10:14:31</div>
+  <div class="alert-g">SAFETY SCORE · 94.7% compliant · 17 of 18 workers OK</div>
+  <h4>Tech</h4>
+  <span class="pill">YOLOv8 / YOLOv11</span><span class="pill">Ultralytics</span><span class="pill">Roboflow PPE dataset</span><span class="pill">OpenCV</span><span class="pill">NumPy</span><span class="pill">Python 3.11</span>
+</div>
+
+<div id="modC" class="section">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+    <h3 style="margin:0">Module C — Activity Analyst</h3>
+    <span class="badge b-coral">Labor efficiency</span>
+  </div>
+  <div class="card">
+    <h4>Concept</h4>
+    <p>A pose estimation engine quantifies productive movement by tracking 33 skeletal landmark joints per worker per frame using MediaPipe Pose. It distinguishes active labor (hammering, lifting, carrying) from static presence (standing still, idle). Individual and team efficiency scores are computed continuously and displayed on the dashboard.</p>
+  </div>
+  <div class="card">
+    <h4>Algorithm skeleton — step by step</h4>
+    <div class="step"><div class="snum">1</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">MediaPipe Pose init</div><p>Initialize MediaPipe Pose model. Set <span style="font-family:var(--font-mono);font-size:12px">min_detection_confidence=0.7</span>. The model returns 33 landmarks per person: nose, shoulders, elbows, wrists, hips, knees, ankles.</p>
+    <div class="code">import mediapipe as mp<br>mp_pose = mp.solutions.pose<br>pose = mp_pose.Pose(min_detection_confidence=0.7,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;min_tracking_confidence=0.5)</div></div></div>
+    <div class="step"><div class="snum">2</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">Landmark extraction per frame</div><p>Convert frame to RGB. Run pose inference. Extract key joint positions — focus on wrists (L/R), elbows (L/R), and hips (L/R) as primary labor-activity indicators.</p>
+    <div class="code">results = pose.process(rgb_frame)<br>if results.pose_landmarks:<br>&nbsp;&nbsp;landmarks = results.pose_landmarks.landmark<br>&nbsp;&nbsp;wrist_L = (landmarks[15].x, landmarks[15].y)<br>&nbsp;&nbsp;wrist_R = (landmarks[16].x, landmarks[16].y)</div></div></div>
+    <div class="step"><div class="snum">3</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">Movement delta calculation</div><p>Per frame, calculate Euclidean displacement of each tracked joint vs previous frame. Sum all joint deltas to get a "movement score" for that frame.</p>
+    <div class="code">def joint_delta(prev, curr):<br>&nbsp;&nbsp;return math.sqrt((curr[0]-prev[0])**2 + (curr[1]-prev[1])**2)<br><br>movement_score = sum(joint_delta(prev[j], curr[j]) for j in KEY_JOINTS)</div></div></div>
+    <div class="step"><div class="snum">4</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">Active vs idle classification</div><p>Apply rolling window (30 frames ≈ 1 second). If avg movement_score &gt; ACTIVE_THRESHOLD → state = "Active". If score &lt; IDLE_THRESHOLD for &gt;300 consecutive seconds → state = "Idle" → flag worker on dashboard.</p>
+    <div class="code">ACTIVE_THRESHOLD = 0.015<br>IDLE_THRESHOLD = 0.003<br>IDLE_TIMEOUT_SEC = 300<br><br>if rolling_avg > ACTIVE_THRESHOLD:<br>&nbsp;&nbsp;state = "Active"; active_frames += 1<br>elif idle_duration > IDLE_TIMEOUT_SEC:<br>&nbsp;&nbsp;state = "Idle"; flag_worker(worker_id)</div></div></div>
+    <div class="step"><div class="snum">5</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">Efficiency score</div><p>Calculate per-worker efficiency as active ratio. Team efficiency = average of all individual scores. Feed both to dashboard in real time.</p>
+    <div class="code">efficiency = (active_frames / total_frames) * 100<br>team_efficiency = sum(w.efficiency for w in workers) / len(workers)</div></div></div>
+    <div class="step"><div class="snum">6</div><div><div style="font-weight:500;font-size:13px;color:var(--color-text-primary)">Skeleton overlay</div><p>Draw MediaPipe skeleton on live frame using <span style="font-family:var(--font-mono);font-size:12px">mp.solutions.drawing_utils</span>. Color joints GREEN for active workers, AMBER for low-activity workers, RED for flagged idle workers.</p></div></div>
+  </div>
+  <div class="row">
+    <div class="col card">
+      <h4>Inputs</h4>
+      <div class="io-row"><div class="io-label">Video</div><div class="io-val">Any camera feed with visible workers</div></div>
+      <div class="io-row"><div class="io-label">Config</div><div class="io-val">Activity thresholds, idle timeout seconds</div></div>
+      <div class="io-row"><div class="io-label">Worker IDs</div><div class="io-val">Tracked via YOLO detection + simple tracker</div></div>
+    </div>
+    <div class="col card">
+      <h4>Outputs</h4>
+      <div class="io-row"><div class="io-label">Per worker</div><div class="io-val">State (Active/Idle), efficiency %, idle duration</div></div>
+      <div class="io-row"><div class="io-label">Team</div><div class="io-val">Team efficiency %, active count, idle count</div></div>
+      <div class="io-row"><div class="io-label">Overlay</div><div class="io-val">Color-coded skeleton on each tracked worker</div></div>
+    </div>
+  </div>
+  <h4>Sample dashboard alerts</h4>
+  <div class="alert-a">IDLE · Worker #03 — no movement for 6 mins · Zone B2 · 11:08:00</div>
+  <div class="alert-g">EFFICIENCY · Team score: 82% · 14 active, 2 low-activity, 1 idle</div>
+  <div class="alert-g">EFFICIENCY · Worker #07 — top performer · 97% active today</div>
+  <h4>Tech</h4>
+  <span class="pill">MediaPipe Pose</span><span class="pill">OpenPose (alt)</span><span class="pill">OpenCV</span><span class="pill">NumPy</span><span class="pill">Python 3.11</span><span class="pill">math</span>
+</div>
+
+<div id="phases" class="section">
+  <h3>Build phases — implementation plan</h3>
+  <div class="phase-block phase-a">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-weight:500;font-size:14px;color:var(--color-text-primary)">Phase 1 — Virtual environment (Civil Engineer)</div>
+      <span class="badge b-purple">Do first</span>
+    </div>
+    <ul>
+      <li>Build "Perfect Building" in Twinmotion — correct geometry, all elements precisely placed</li>
+      <li>Create "Work-in-Progress" site version — same model but intentionally misplace 1 column (5–8cm off-axis) and leave 1 worker without a helmet</li>
+      <li>Export drone-view flythrough video (.mp4) at 1080p from Twinmotion Video tool</li>
+      <li>Export 5 fixed-camera videos: Front, Back, Top, Left, Right angles</li>
+      <li>Export BIM coordinate JSON: each element with ID, type (wall/column/beam), x/y/z world position</li>
+      <li>Export one rendered screenshot per camera angle (these are the "Master Reference Images")</li>
+    </ul>
+    <div style="margin-top:8px"><span class="badge b-red">Critical path</span> <span style="font-size:12px;color:var(--color-text-secondary)">CS leads cannot test AI logic without these videos. Do this first, immediately.</span></div>
+  </div>
+  <div class="phase-block phase-b">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-weight:500;font-size:14px;color:var(--color-text-primary)">Phase 2 — AI brain (CS Lead 1)</div>
+      <span class="badge b-teal">Parallel with Phase 3</span>
+    </div>
+    <ul>
+      <li>Set up Python project: <span style="font-family:var(--font-mono);font-size:12px">pip install opencv-python ultralytics mediapipe numpy</span></li>
+      <li>Download pre-trained YOLOv8-PPE weights from Roboflow Universe (search "PPE detection")</li>
+      <li>Write <span style="font-family:var(--font-mono);font-size:12px">module_a.py</span>: frame extraction + ORB matching + pixel diff + BIM JSON comparison</li>
+      <li>Write <span style="font-family:var(--font-mono);font-size:12px">module_b.py</span>: multi-stream YOLOv8 inference + buffer zone polygon checks</li>
+      <li>Write <span style="font-family:var(--font-mono);font-size:12px">module_c.py</span>: MediaPipe pose + joint delta + efficiency scoring</li>
+      <li>Write <span style="font-family:var(--font-mono);font-size:12px">report_gen.py</span>: call Claude API with structured alert log → return formatted PDF summary text</li>
+      <li>Expose results as a shared Python dict or simple REST endpoint for dashboard to read</li>
+    </ul>
+  </div>
+  <div class="phase-block phase-c">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-weight:500;font-size:14px;color:var(--color-text-primary)">Phase 3 — Command dashboard (CS Lead 2)</div>
+      <span class="badge b-coral">Parallel with Phase 2</span>
+    </div>
+    <ul>
+      <li>Set up Streamlit app: <span style="font-family:var(--font-mono);font-size:12px">pip install streamlit</span></li>
+      <li>Panel 1 — Live multi-view: 4 small st.image windows (Front/Back/Top/Left feeds with AI overlays)</li>
+      <li>Panel 2 — Progress bar: <span style="font-family:var(--font-mono);font-size:12px">st.progress(45)</span> showing "45% complete vs yesterday 42%"</li>
+      <li>Panel 3 — Anomaly log: <span style="font-family:var(--font-mono);font-size:12px">st.error()</span> and <span style="font-family:var(--font-mono);font-size:12px">st.warning()</span> entries for each alert in real time</li>
+      <li>Panel 4 — Metric cards: Safety score %, Team efficiency %, Deviations found count</li>
+      <li>Add "Generate PDF Report" button → calls Claude API → displays/downloads report</li>
+      <li>Use <span style="font-family:var(--font-mono);font-size:12px">st.rerun()</span> in a loop for live updating (or <span style="font-family:var(--font-mono);font-size:12px">time.sleep(2)</span> between refreshes)</li>
+    </ul>
+  </div>
+  <div class="card" style="margin-top:4px">
+    <h4>Priority order (for the crunch)</h4>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <div style="height:8px;border-radius:100px;background:#639922;flex:0 0 60%"></div>
+      <p style="font-size:12px">60% — Module B (Guardian) + Streamlit dashboard. Most visual for judges.</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <div style="height:8px;border-radius:100px;background:#BA7517;flex:0 0 25%"></div>
+      <p style="font-size:12px">25% — Module C (Activity Analyst). Second most visual — skeleton overlays impress.</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="height:8px;border-radius:100px;background:var(--color-border-secondary);flex:0 0 15%"></div>
+      <p style="font-size:12px">15% — Module A (BIM Comparator). Can fake with video edit in 5 AM crunch.</p>
+    </div>
+  </div>
+</div>
+
+<div id="stack" class="section">
+  <h3>Complete technology stack</h3>
+  <div class="row">
+    <div class="col card">
+      <h4>Simulation &amp; 3D</h4>
+      <div class="io-row"><div class="io-label">Primary</div><div class="io-val">Twinmotion 2024 — building scenes + drone flythrough video export</div></div>
+      <div class="io-row"><div class="io-label">Alternate</div><div class="io-val">Unreal Engine 5 — if more control over rendering needed</div></div>
+      <div class="io-row"><div class="io-label">BIM export</div><div class="io-val">JSON with element ID, type, x/y/z, orientation</div></div>
+      <div class="io-row"><div class="io-label">Output</div><div class="io-val">.mp4 videos + .png master reference frames</div></div>
+    </div>
+    <div class="col card">
+      <h4>Computer vision</h4>
+      <div class="io-row"><div class="io-label">Frame ops</div><div class="io-val">OpenCV 4.x — capture, resize, overlay, diff, polygon test</div></div>
+      <div class="io-row"><div class="io-label">Matching</div><div class="io-val">ORB (fast) or SIFT (accurate) via cv2 — keypoint detection + BFMatcher</div></div>
+      <div class="io-row"><div class="io-label">Object det</div><div class="io-val">YOLOv8 or YOLOv11 via Ultralytics — PPE classes + person centroid</div></div>
+      <div class="io-row"><div class="io-label">Pose</div><div class="io-val">MediaPipe Pose — 33 landmark skeleton per person per frame</div></div>
+      <div class="io-row"><div class="io-label">Math</div><div class="io-val">NumPy — matrix ops, distance calc, rolling averages</div></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col card">
+      <h4>Model weights</h4>
+      <div class="io-row"><div class="io-label">PPE model</div><div class="io-val">Download from Roboflow Universe — search "Construction PPE" or "Hard Hat Detection"</div></div>
+      <div class="io-row"><div class="io-label">Format</div><div class="io-val">.pt file (PyTorch) — works directly with Ultralytics YOLO()</div></div>
+      <div class="io-row"><div class="io-label">Pose</div><div class="io-val">MediaPipe auto-downloads weights on first run — no manual download</div></div>
+      <div class="io-row"><div class="io-label">Backup</div><div class="io-val">YOLOv8n.pt (nano) — fastest, good for demo hardware</div></div>
+    </div>
+    <div class="col card">
+      <h4>Dashboard &amp; reporting</h4>
+      <div class="io-row"><div class="io-label">Dashboard</div><div class="io-val">Streamlit — st.image, st.progress, st.error, st.metric, st.rerun</div></div>
+      <div class="io-row"><div class="io-label">Alt dashboard</div><div class="io-val">Flask + HTML — if Streamlit layout is too constrained</div></div>
+      <div class="io-row"><div class="io-label">Report gen</div><div class="io-val">Claude API (claude-sonnet-4-20250514) — structured alert log → PDF prose</div></div>
+      <div class="io-row"><div class="io-label">PDF export</div><div class="io-val">reportlab or fpdf2 — render Claude's output text to downloadable PDF</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <h4>Install order (do this now)</h4>
+    <div class="code">pip install opencv-python ultralytics mediapipe numpy streamlit reportlab<br>pip install anthropic<br><br>from ultralytics import YOLO<br>model = YOLO("yolov8n.pt")<br><br>import mediapipe as mp<br>pose = mp.solutions.pose.Pose()</div>
+  </div>
+  <div class="card">
+    <h4>Claude API — report generation prompt skeleton</h4>
+    <div class="code">prompt = f"""<br>You are a construction site AI auditor. Given this data from today's site scan:<br>- Structural deviations: {deviations}<br>- Safety compliance: {safety_score}%<br>- Labor efficiency: {team_efficiency}%<br>- Alert log: {alert_log}<br><br>Generate a professional 1-page site audit report with:<br>1. Executive summary<br>2. Structural findings<br>3. Safety findings<br>4. Labor efficiency findings<br>5. Recommended actions<br>6. Estimated cost impact<br>"""</div>
+  </div>
+</div>
+
+</div>
+
+<script>
+var allSections = document.querySelectorAll('.section');
+function show(id, btn) {
+  allSections.forEach(function(s){ s.style.display='none'; });
+  document.getElementById(id).style.display='block';
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  if(btn) btn.classList.add('active');
+}
+document.addEventListener('DOMContentLoaded', function(){
+  allSections.forEach(function(s,i){ if(i>0) s.style.display='none'; });
+});
+show('overview', document.querySelector('.tab.active'));
+</script>

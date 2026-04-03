@@ -1,8 +1,20 @@
 import { Router, type IRouter } from "express";
 import healthRouter from "./health";
+import dashboardRouter from "./dashboard";
+import moduleARouter from "./module-a";
+import moduleBRouter from "./module-b";
+import moduleCRouter from "./module-c";
+import alertsRouter from "./alerts";
+import reportsRouter from "./reports";
 
 const router: IRouter = Router();
 
 router.use(healthRouter);
+router.use(dashboardRouter);
+router.use(moduleARouter);
+router.use(moduleBRouter);
+router.use(moduleCRouter);
+router.use(alertsRouter);
+router.use(reportsRouter);
 
 export default router;

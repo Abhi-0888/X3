@@ -1,0 +1,108 @@
+This comprehensive master blueprint combines the **Astra-Eye Construction Intelligence (AECI)** system architecture, technical implementation logic, and organized project structure into a single, executable guide for your hackathon team.
+
+---
+
+# 🏗️ Astra-Eye Construction Intelligence (AECI)
+### **The Real-Time Autonomous Construction Auditor**
+
+AECI is a multi-agent spatial AI ecosystem designed to bridge the "information asynchrony" between 3D architectural intent and physical site reality. By integrating drone-based structural audits, 360° safety monitoring, and pose-based labor analytics, it provides a "Digital Pulse" for modern construction management.
+
+---
+
+## 📄 1. The Core Problem & Solution
+
+* **The Crisis**: Structural deviations often go undetected for days, leading to compounding rework costs. 
+* **Safety Gaps**: Manual inspections are intermittent, leaving workers vulnerable in "Danger Zones".
+* **Productivity Blindness**: Managers lack objective data on actual "tool-time" vs. "idle-time".
+* **The AECI Solution**: An AI-integrated Digital Twin dashboard that synchronizes physical construction with a 3D prototype for real-time error detection, safety compliance, and labor optimization.
+
+---
+
+## 🧠 2. The Three Core AI Modules
+
+### **Module A: Drone-BIM Navigator (Progress & Accuracy)**
+* **Concept**: An AI drone performs an automated site scan, comparing live video against the 3D "Ground Truth".
+* **Mathematical Logic**:
+    1.  **Feature Matching**: Apply ORB or SIFT keypoint detectors on live and master frames.
+    2.  **Homography**: Compute the transformation matrix $H$ to align the live perspective to the 3D model perspective.
+    3.  **Pixel-Diff**: Calculate $diff = |Warped\_Live - Master|$. Any cluster of pixels exceeding a specific threshold is flagged as a **Structural Anomaly**.
+* **Output**: A geometric anomaly map showing exactly what percentage of a wall was built compared to yesterday.
+
+### **Module B: 360° Guardian (Safety & Buffer Zones)**
+* **Concept**: A multi-camera array providing a spherical safety net.
+* **Logic**:
+    1.  **PPE Detection**: Run YOLOv8/v11 on 5 camera feeds to detect classes: `person`, `helmet`, `vest`.
+    2.  **Buffer Zone Check**: Define danger polygons (e.g., crane zones). For every worker with centroid $(c_x, c_y)$, use a point-in-polygon test to check for unauthorized entry.
+* **Output**: A live safety health score and instant dashboard alarms for PPE violations or zone breaches.
+
+### **Module C: Activity Analyst (Labor Efficiency)**
+* **Concept**: A pose-estimation engine that quantifies productive movement.
+* **Logic**: 
+    1.  **Skeleton Tracking**: Track 33 landmarks per person using MediaPipe Pose.
+    2.  **Efficiency Metric**: Calculate the movement score $M$ across frames:
+        $$M = \sum_{j \in Joints} \sqrt{(x_{curr} - x_{prev})^2 + (y_{curr} - y_{prev})^2}$$
+    3.  **Classification**: If $M < Threshold$ for $>300$ seconds, the worker is flagged as "Idle".
+* **Output**: Individual and team efficiency scores quantified on the dashboard.
+
+---
+
+## 🛠️ 3. Technical Architecture & Implementation
+
+### **The Stack**
+* **Simulation**: Twinmotion 2024 / Unreal Engine 5.
+* **AI Engine**: Python 3.11 with OpenCV, Ultralytics (YOLO), and MediaPipe.
+* **Dashboard**: Streamlit for real-time visualization and metric cards.
+* **Reporting**: Claude API for generating structured PDF audit summaries.
+
+### **Project Folder Structure**
+Organize your root directory as follows to allow parallel development:
+
+```text
+AECI_Project/
+├── assets/                      # 🏗️ Civil Engineer Domain
+│   ├── videos/                  # Drone.mp4, Cam_Front.mp4, etc.
+│   ├── reference_frames/        # Master screenshots from Twinmotion/UE5
+│   └── bim_data/                # Element IDs and world coordinates (JSON)
+├── backend/                     # 🧠 CS Lead 1 Domain (AI Engine)
+│   ├── module_a_drone.py        # Structural comparison logic
+│   ├── module_b_safety.py       # YOLO PPE and Buffer Zone logic
+│   ├── module_c_analyst.py      # MediaPipe Pose tracking logic
+│   └── report_gen.py            # Claude API integration
+├── frontend/                    # 🖥️ CS Lead 2 Domain (Dashboard)
+│   ├── app.py                   # Streamlit dashboard
+│   └── style.css                # Pro-tier styling
+├── outputs/                     # 🔄 Shared Bridge (Data Flow)
+│   ├── state.json               # Live metrics (Backend writes, UI reads)
+│   ├── live_frames/             # Processed frames with AI overlays
+│   └── reports/                 # Generated PDF audits
+├── requirements.txt             # Project dependencies
+└── README.md                    # Setup and pitch guide
+```
+
+
+---
+
+## 🚀 4. Build Phases (The Countdown)
+
+### **Phase 1: Virtual Environment (Immediately)**
+* **Civil Engineer**: Build the "Perfect" and "Flawed" versions of the site in Twinmotion.
+* **Deliverables**: Export 1 drone flythrough, 5 fixed-angle feeds, and the BIM JSON data.
+
+### **Phase 2: AI Brain & Dashboard (Parallel)**
+* **CS Lead 1**: Implement the Python inference loops. Focus on Module B (Safety) first as it is the most visually impressive for judges.
+* **CS Lead 2**: Build the Streamlit layout with 4-pane live feeds, progress bars, and metric cards.
+
+### **Phase 3: The "X-Factor" Pitch**
+* **Integration**: Connect the Claude API to the `state.json` file to generate a "Financial Impact Report".
+* **Impact**: Frame the project's value around ROI—catching a 1% deviation today saves thousands in rework later.
+
+### **Dependencies (`requirements.txt`)**
+```text
+opencv-python
+numpy
+ultralytics
+mediapipe
+streamlit
+anthropic
+reportlab
+```

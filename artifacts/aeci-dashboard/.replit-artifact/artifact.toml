@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Astra-Eye Construction Intelligence"
+version = "1.0.0"
+id = "artifacts/aeci-dashboard"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23753
+
+[services.development]
+run = "pnpm --filter @workspace/aeci-dashboard run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/aeci-dashboard", "run", "build" ]
+publicDir = "artifacts/aeci-dashboard/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23753"
+BASE_PATH = "/"
