@@ -413,6 +413,94 @@ export interface GenerateReportBody {
   includeModuleC?: boolean;
 }
 
+export interface BrainStatus {
+  online: boolean;
+  lastSeen?: string | null;
+  mode?: string | null;
+  cameraView?: string | null;
+  safetyScore?: number | null;
+  deviationPct?: number | null;
+  progressPct?: number | null;
+  teamEfficiency?: number | null;
+  activeWorkers?: number | null;
+  idleWorkers?: number | null;
+  deviationCount?: number | null;
+  ppeViolations?: number | null;
+  zoneBreaches?: number | null;
+  moduleAActive?: boolean | null;
+  moduleBActive?: boolean | null;
+  moduleCActive?: boolean | null;
+  brainVersion?: string | null;
+}
+
+export interface LiveFrame {
+  frameB64?: string | null;
+  timestamp?: string | null;
+  cameraView?: string | null;
+}
+
+export interface IngestHeartbeatBody {
+  safetyScore?: number;
+  deviationPct?: number;
+  progressPct?: number;
+  teamEfficiency?: number;
+  activeWorkers?: number;
+  idleWorkers?: number;
+  deviationCount?: number;
+  ppeViolations?: number;
+  zoneBreaches?: number;
+  moduleAActive?: boolean;
+  moduleBActive?: boolean;
+  moduleCActive?: boolean;
+  cameraView?: string;
+  mode?: string;
+  brainVersion?: string;
+  timestamp?: string;
+}
+
+export interface IngestFrameBody {
+  frameB64: string;
+  timestamp?: string;
+  cameraView?: string;
+}
+
+export type IngestAlertBodyType =
+  (typeof IngestAlertBodyType)[keyof typeof IngestAlertBodyType];
+
+export const IngestAlertBodyType = {
+  DEVIATION: "DEVIATION",
+  PPE_VIOLATION: "PPE_VIOLATION",
+  ZONE_BREACH: "ZONE_BREACH",
+  IDLE_WORKER: "IDLE_WORKER",
+  PROGRESS: "PROGRESS",
+} as const;
+
+export type IngestAlertBodySeverity =
+  (typeof IngestAlertBodySeverity)[keyof typeof IngestAlertBodySeverity];
+
+export const IngestAlertBodySeverity = {
+  critical: "critical",
+  high: "high",
+  medium: "medium",
+  low: "low",
+  info: "info",
+} as const;
+
+export interface IngestAlertBody {
+  type: IngestAlertBodyType;
+  severity: IngestAlertBodySeverity;
+  title: string;
+  message: string;
+  zone: string;
+  module?: string;
+  timestamp?: string;
+}
+
+export interface AdminResetResponse {
+  success: boolean;
+  message: string;
+}
+
 export type ListDroneScansParams = {
   limit?: number;
   offset?: number;
@@ -454,3 +542,20 @@ export const ListAlertsType = {
   IDLE_WORKER: "IDLE_WORKER",
   PROGRESS: "PROGRESS",
 } as const;
+
+export type IngestHeartbeat200 = {
+  ok: boolean;
+};
+
+export type IngestFrame200 = {
+  ok: boolean;
+};
+
+export type IngestAlert201 = {
+  ok: boolean;
+  id: number;
+};
+
+export type AdminResetBody = {
+  confirm: boolean;
+};

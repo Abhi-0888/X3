@@ -1,0 +1,59 @@
+### 🗂️ Replit Project Structure
+Ensure your Replit files are organized as follows to allow the "AI Brain" to communicate with the "Dashboard" via a JSON bridge:
+
+```text
+AECI_Replit/
+├── .replit                      # Replit configuration
+├── requirements.txt             # Dependencies (ultralytics, mediapipe, streamlit, etc.)
+├── main.py                      # THE BRAIN: Runs YOLOv8 and processes Twinmotion feed
+├── dashboard.py                 # THE FACE: Your Streamlit UI
+├── assets/
+│   ├── prototype_house.png      # "Master" reference image of the built house
+│   └── custom_yolo.pt           # Your Datature-trained weights
+├── outputs/
+│   ├── state.json               # THE BRIDGE: Brain writes metrics here; Dashboard reads them
+│   └── processed_frame.jpg      # Latest frame with AI overlays
+└── utils/
+    └── report_gen.py            # Claude API integration for PDF audits
+```
+
+
+> "I am building the **Astra-Eye Construction Intelligence (AECI)** system. I have a Streamlit dashboard at `dashboard.py` and I need to integrate an **AI Brain** in `main.py` that processes a live 3D feed from Twinmotion.
+>
+> **Task 1: The AI Brain (main.py)**
+> 1. Use **OpenCV** to capture the live feed (simulated via OBS Virtual Camera/Webcam).
+> 2. Implement **Module B (Guardian)**: Load a custom **YOLOv8** model (`assets/custom_yolo.pt`). Detect 'worker' and 'helmet'. If a worker has no helmet or enters a coordinate-based 'Danger Zone', trigger a safety alert.
+> 3. Implement **Module C (Analyst)**: Use **MediaPipe Pose** to track worker skeletons. Calculate an efficiency score based on the delta of joint movement over 30 frames.
+> 4. Implement **Module A (Drone-BIM)**: Compare the live feed to `assets/prototype_house.png` using **ORB feature matching** and `cv2.absdiff`. Highlight structural differences in red.
+> 5. **The Bridge**: Save the latest `safety_score`, `efficiency_score`, and `alert_log` to `outputs/state.json` and save the processed image to `outputs/processed_frame.jpg`.
+>
+> **Task 2: Dashboard Integration (dashboard.py)**
+> 1. Update the UI to show the **'Digital Pulse'**: Real-time metric cards for Safety, Efficiency, and Anomaly count.
+> 2. Create a **Multi-View Section**: Display the `outputs/processed_frame.jpg` which shows the live Twinmotion feed with YOLO bounding boxes and MediaPipe skeletons.
+> 3. Implement the **AlertLog**: A sidebar or scrolling list that updates whenever `state.json` contains a new violation.
+> 4. Implement **Audit Reports**: A button that sends the current `state.json` data to the **Claude API** to generate a 1-page summary and offers it as a PDF download.
+>
+> **Logic for Prototype vs. Test House:**
+> The code must assume that the `prototype_house.png` is the 'Ground Truth.' Any missing geometry in the live feed must be flagged as a 'Structural Anomaly' by the Drone-BIM module."
+
+---
+
+### 🛠️ Key Implementation Details for Your Team
+
+#### 1. Connecting Twinmotion to Replit
+Since Replit runs in the cloud, it cannot see your laptop's OBS Virtual Camera directly. 
+* **Local Solution:** Run the `main.py` (The Brain) **locally on your laptop** so it can see your Twinmotion window via OBS.
+* **The Bridge:** Have your local script "POST" the `state.json` data to your Replit dashboard URL or use a shared Replit database.
+
+#### 2. Training with Datature
+To make the brain work, follow these steps for your model:
+* **Export "Prototype" frames:** Take screenshots in Twinmotion of the perfectly built house.
+* **Export "Test" frames:** Take screenshots of the house with missing walls or workers without helmets.
+* **Upload to Datature:** Annotate the missing parts as `anomaly` and workers as `unsafe_worker`.
+* **Deployment:** Once trained, download the `.pt` file and place it in your project's `assets/` folder.
+
+#### 3. The "Digital Pulse" Metric Logic
+In your `dashboard.py`, ensure your metrics are calculated like this to impress the judges:
+* **Safety Score:** `(Number of compliant workers / Total workers) * 100`.
+* **Efficiency:** Based on the movement delta from Module C—high movement equals high "Tool-Time".
+* **Structural Delta:** The percentage of pixels that differ between the Prototype house and the Test house.

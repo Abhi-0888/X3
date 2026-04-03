@@ -26,6 +26,12 @@ tags:
     description: Worker management
   - name: cameras
     description: Camera feeds and zones
+  - name: ingest
+    description: Brain data ingest endpoints (called by local AI brain)
+  - name: live
+    description: Live data endpoints (real-time brain status and frames)
+  - name: admin
+    description: Administration endpoints (reset, mode switching)
 
 paths:
   /healthz:
@@ -444,6 +450,127 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuditReport"
+
+  # ── Brain Ingest Endpoints (called by local brain.py) ─────────────────
+
+  /ingest/heartbeat:
+    post:
+      operationId: ingestHeartbeat
+      tags: [ingest]
+      summary: Receive a real-time metrics heartbeat from the AI brain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IngestHeartbeatBody"
+      responses:
+        "200":
+          description: Heartbeat received
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                required: [ok]
+
+  /ingest/frame:
+    post:
+      operationId: ingestFrame
+      tags: [ingest]
+      summary: Receive a processed video frame (base64 JPEG) from the AI brain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IngestFrameBody"
+      responses:
+        "200":
+          description: Frame received
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                required: [ok]
+
+  /ingest/alert:
+    post:
+      operationId: ingestAlert
+      tags: [ingest]
+      summary: Receive a new alert from the AI brain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IngestAlertBody"
+      responses:
+        "201":
+          description: Alert stored
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  id: { type: integer }
+                required: [ok, id]
+
+  # ── Live Data Endpoints (polled by dashboard) ─────────────────────────
+
+  /live/status:
+    get:
+      operationId: getLiveStatus
+      tags: [live]
+      summary: Get brain connection status and latest real-time metrics
+      responses:
+        "200":
+          description: Brain status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BrainStatus"
+
+  /live/frame:
+    get:
+      operationId: getLiveFrame
+      tags: [live]
+      summary: Get the latest processed video frame from the AI brain
+      responses:
+        "200":
+          description: Latest frame
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LiveFrame"
+
+  # ── Admin Endpoints ────────────────────────────────────────────────────
+
+  /admin/reset:
+    post:
+      operationId: adminReset
+      tags: [admin]
+      summary: Reset database to clean state for production mode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                confirm: { type: boolean }
+              required: [confirm]
+      responses:
+        "200":
+          description: Database reset
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminResetResponse"
 
 components:
   schemas:
@@ -1041,3 +1168,152 @@ components:
         includeModuleC:
           type: boolean
       required: [period]
+
+    # ── Brain Ingest & Live schemas ──────────────────────────────────────
+
+    BrainStatus:
+      type: object
+      properties:
+        online:
+          type: boolean
+        lastSeen:
+          type: string
+          nullable: true
+        mode:
+          type: string
+          nullable: true
+        cameraView:
+          type: string
+          nullable: true
+        safetyScore:
+          type: number
+          nullable: true
+        deviationPct:
+          type: number
+          nullable: true
+        progressPct:
+          type: number
+          nullable: true
+        teamEfficiency:
+          type: number
+          nullable: true
+        activeWorkers:
+          type: integer
+          nullable: true
+        idleWorkers:
+          type: integer
+          nullable: true
+        deviationCount:
+          type: integer
+          nullable: true
+        ppeViolations:
+          type: integer
+          nullable: true
+        zoneBreaches:
+          type: integer
+          nullable: true
+        moduleAActive:
+          type: boolean
+          nullable: true
+        moduleBActive:
+          type: boolean
+          nullable: true
+        moduleCActive:
+          type: boolean
+          nullable: true
+        brainVersion:
+          type: string
+          nullable: true
+      required: [online]
+
+    LiveFrame:
+      type: object
+      properties:
+        frameB64:
+          type: string
+          nullable: true
+        timestamp:
+          type: string
+          nullable: true
+        cameraView:
+          type: string
+          nullable: true
+      required: []
+
+    IngestHeartbeatBody:
+      type: object
+      properties:
+        safetyScore:
+          type: number
+        deviationPct:
+          type: number
+        progressPct:
+          type: number
+        teamEfficiency:
+          type: number
+        activeWorkers:
+          type: integer
+        idleWorkers:
+          type: integer
+        deviationCount:
+          type: integer
+        ppeViolations:
+          type: integer
+        zoneBreaches:
+          type: integer
+        moduleAActive:
+          type: boolean
+        moduleBActive:
+          type: boolean
+        moduleCActive:
+          type: boolean
+        cameraView:
+          type: string
+        mode:
+          type: string
+        brainVersion:
+          type: string
+        timestamp:
+          type: string
+      required: []
+
+    IngestFrameBody:
+      type: object
+      properties:
+        frameB64:
+          type: string
+        timestamp:
+          type: string
+        cameraView:
+          type: string
+      required: [frameB64]
+
+    IngestAlertBody:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [DEVIATION, PPE_VIOLATION, ZONE_BREACH, IDLE_WORKER, PROGRESS]
+        severity:
+          type: string
+          enum: [critical, high, medium, low, info]
+        title:
+          type: string
+        message:
+          type: string
+        zone:
+          type: string
+        module:
+          type: string
+        timestamp:
+          type: string
+      required: [type, severity, title, message, zone]
+
+    AdminResetResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required: [success, message]

@@ -1,0 +1,24 @@
+# AECI AI Brain — Local Dependencies
+# Install with: pip install -r requirements.txt
+
+# Computer Vision & AI
+opencv-python>=4.8.0
+numpy>=1.24.0
+ultralytics>=8.0.0          # YOLOv8/v11
+mediapipe>=0.10.0            # Pose estimation
+
+# Database & Communication
+pymongo>=4.6.0               # MongoDB (external deployment)
+requests>=2.31.0             # HTTP uplink to API server
+python-dotenv>=1.0.0         # Environment variables
+websocket-client>=1.6.0      # Optional WebSocket push
+
+# Image processing & reporting
+Pillow>=10.0.0
+reportlab>=4.0.0             # PDF generation
+anthropic>=0.20.0            # Claude API for report generation
+
+# Utilities
+python-dateutil>=2.8.0
+colorlog>=6.7.0
+tqdm>=4.65.0

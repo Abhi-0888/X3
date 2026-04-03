@@ -1,0 +1,77 @@
+"Act as a Senior Full-Stack AI Engineer. I am deploying the Astra-Eye Construction Intelligence (AECI) system outside of Replit. The architecture must be decoupled: a local AI Brain (processing Twinmotion feeds) and a Streamlit Dashboard, both connected to a MongoDB database for real-time state management and alert logging.
+
+1. System Architecture & Environment
+Deployment: The system must run on a local machine (Windows/Linux) to access GPU acceleration for YOLOv8 and direct video capture from the Twinmotion viewport via OBS Virtual Camera.
+
+Database: Use MongoDB (Atlas or Local) with three collections: site_metrics (current status), alerts (safety/structural violations), and analytics (labor efficiency trends).
+
+Environment: Create a setup.sh or requirements.txt including ultralytics, opencv-python, mediapipe, pymongo, streamlit, and python-dotenv.
+
+2. The AI Brain Implementation (brain.py)
+Live Feed Ingestion: Use cv2.VideoCapture(0) to grab the Twinmotion live feed (drone/main view) from the OBS Virtual Camera.
+
+Module A (Drone-BIM): Implement the logic from the blueprint:
+
+Load the 'Master Prototype' image.
+
+Perform ORB/SIFT feature matching between the live feed and the prototype.
+
+Calculate pixel-level differences (cv2.absdiff) and flag structural deviations (missing walls/misaligned columns).
+
+Module B (360° Guardian):
+
+Run YOLOv8 for PPE detection (helmet, vest, person).
+
+Implement Point-in-Polygon logic using cv2.pointPolygonTest to detect unauthorized entry into hazardous 'Buffer Zones' defined in the environment.
+
+Module C (Activity Analyst):
+
+Use MediaPipe Pose to track 33 landmarks.
+
+Calculate Euclidean displacement of joints (wrists/elbows) over a rolling 30-frame window to classify workers as 'Active' or 'Idle'.
+
+Data Uplink: Every 1 second, update MongoDB with the current safety_score, efficiency_score, and any new alerts.
+
+3. The Live Dashboard (app.py)
+Real-Time Data: Remove all demo data. Implement a get_latest_metrics() function that queries MongoDB using pymongo.
+
+Digital Pulse Interface:
+
+Display real-time metric cards for Safety Health %, Active Worker Count, and Anomaly Count.
+
+Show a live-scrolling AlertLog that pulls from the alerts collection.
+
+Video Overlay: Display the processed live feed (showing YOLO bounding boxes and MediaPipe skeletons) using st.image.
+
+Audit Report Generator: A button that pulls the last 24 hours of data from MongoDB and uses the Claude API to generate a structured PDF audit report.
+
+4. Twinmotion Integration Logic
+The script must be able to switch between camera views by recognizing changes in the video feed or receiving a signal.
+
+Ensure the Drone-BIM comparison only triggers when the drone view is active, comparing it against the correct BIM JSON world coordinates provided in the blueprint.
+
+5. Database Schema & Cleanup
+Ensure the site_metrics collection only stores the most recent 'heartbeat' to keep the dashboard fast.
+
+Implement a 'Test Mode' vs 'Production Mode' toggle to clear the database before starting a new site audit."
+
+🛠️ Execution Roadmap for Your Team
+Local Setup:
+
+Install OBS Studio on your laptop. Set it to "Window Capture" your Twinmotion window and click "Start Virtual Camera."
+
+Install MongoDB Compass to visualize your real-time data locally.
+
+Data Preparation (Datature):
+
+Export your screenshots of the "Prototype House" and "Test House" from Twinmotion.
+
+Train your YOLOv8 model in Datature specifically on your 3D assets and workers.
+
+Connecting the Brain:
+
+Run the brain.py script. It will open the OBS camera, run the AI modules, and start pushing data to MongoDB.
+
+Launching the Dashboard:
+
+Run streamlit run app.py. It will connect to the same MongoDB and display the "Digital Pulse" of your virtual construction site in real-time.

@@ -546,3 +546,105 @@ export const GetReportResponse = zod.object({
   recommendations: zod.array(zod.string()),
   fullReport: zod.string(),
 });
+
+/**
+ * @summary Receive a real-time metrics heartbeat from the AI brain
+ */
+export const IngestHeartbeatBody = zod.object({
+  safetyScore: zod.number().optional(),
+  deviationPct: zod.number().optional(),
+  progressPct: zod.number().optional(),
+  teamEfficiency: zod.number().optional(),
+  activeWorkers: zod.number().optional(),
+  idleWorkers: zod.number().optional(),
+  deviationCount: zod.number().optional(),
+  ppeViolations: zod.number().optional(),
+  zoneBreaches: zod.number().optional(),
+  moduleAActive: zod.boolean().optional(),
+  moduleBActive: zod.boolean().optional(),
+  moduleCActive: zod.boolean().optional(),
+  cameraView: zod.string().optional(),
+  mode: zod.string().optional(),
+  brainVersion: zod.string().optional(),
+  timestamp: zod.string().optional(),
+});
+
+export const IngestHeartbeatResponse = zod.object({
+  ok: zod.boolean(),
+});
+
+/**
+ * @summary Receive a processed video frame (base64 JPEG) from the AI brain
+ */
+export const IngestFrameBody = zod.object({
+  frameB64: zod.string(),
+  timestamp: zod.string().optional(),
+  cameraView: zod.string().optional(),
+});
+
+export const IngestFrameResponse = zod.object({
+  ok: zod.boolean(),
+});
+
+/**
+ * @summary Receive a new alert from the AI brain
+ */
+export const IngestAlertBody = zod.object({
+  type: zod.enum([
+    "DEVIATION",
+    "PPE_VIOLATION",
+    "ZONE_BREACH",
+    "IDLE_WORKER",
+    "PROGRESS",
+  ]),
+  severity: zod.enum(["critical", "high", "medium", "low", "info"]),
+  title: zod.string(),
+  message: zod.string(),
+  zone: zod.string(),
+  module: zod.string().optional(),
+  timestamp: zod.string().optional(),
+});
+
+/**
+ * @summary Get brain connection status and latest real-time metrics
+ */
+export const GetLiveStatusResponse = zod.object({
+  online: zod.boolean(),
+  lastSeen: zod.string().nullish(),
+  mode: zod.string().nullish(),
+  cameraView: zod.string().nullish(),
+  safetyScore: zod.number().nullish(),
+  deviationPct: zod.number().nullish(),
+  progressPct: zod.number().nullish(),
+  teamEfficiency: zod.number().nullish(),
+  activeWorkers: zod.number().nullish(),
+  idleWorkers: zod.number().nullish(),
+  deviationCount: zod.number().nullish(),
+  ppeViolations: zod.number().nullish(),
+  zoneBreaches: zod.number().nullish(),
+  moduleAActive: zod.boolean().nullish(),
+  moduleBActive: zod.boolean().nullish(),
+  moduleCActive: zod.boolean().nullish(),
+  brainVersion: zod.string().nullish(),
+});
+
+/**
+ * @summary Get the latest processed video frame from the AI brain
+ */
+export const GetLiveFrameResponse = zod.object({
+  frameB64: zod.string().nullish(),
+  timestamp: zod.string().nullish(),
+  cameraView: zod.string().nullish(),
+});
+
+/**
+ * @summary Reset database to clean state for production mode
+ */
+export const AdminResetBody = zod.object({
+  confirm: zod.boolean(),
+});
+
+export const AdminResetResponse = zod.object({
+  success: zod.boolean(),
+  message: zod.string(),
+});

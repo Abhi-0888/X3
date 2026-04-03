@@ -4,7 +4,9 @@ import {
   useGetDashboardMetrics, 
   useListAlerts, 
   useListCameras,
-  useAcknowledgeAlert
+  useAcknowledgeAlert,
+  useGetLiveStatus,
+  useAdminReset,
 } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,62 +22,139 @@ import {
   Users,
   Camera as CameraIcon,
   Bell,
-  ArrowRight
+  ArrowRight,
+  RotateCcw,
+  FlaskConical,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link } from "wouter";
+import { BrainStatusPanel } from "@/components/brain-status";
+import { LiveFeedViewer } from "@/components/live-feed";
 
 export default function DashboardPage() {
   const { data: pulse, isLoading: isLoadingPulse } = useGetDashboardPulse({ query: { refetchInterval: 10000 } });
   const { data: metrics, isLoading: isLoadingMetrics } = useGetDashboardMetrics({ query: { refetchInterval: 10000 } });
   const { data: alerts, isLoading: isLoadingAlerts } = useListAlerts({ limit: 5, acknowledged: false }, { query: { refetchInterval: 10000 } });
   const { data: cameras, isLoading: isLoadingCameras } = useListCameras({ query: { refetchInterval: 10000 } });
+  const { data: brainStatus } = useGetLiveStatus({ query: { refetchInterval: 2000 } });
 
   const acknowledgeAlert = useAcknowledgeAlert();
+  const adminReset = useAdminReset();
+
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  const handleReset = () => {
+    if (showResetConfirm) {
+      adminReset.mutate({ data: { confirm: true } });
+      setShowResetConfirm(false);
+    } else {
+      setShowResetConfirm(true);
+      setTimeout(() => setShowResetConfirm(false), 4000);
+    }
+  };
+
+  // Use live brain data when available, fall back to DB data
+  const safetyScore = brainStatus?.online && brainStatus.safetyScore !== null
+    ? brainStatus.safetyScore : pulse?.safetyScore;
+  const activeWorkers = brainStatus?.online && brainStatus.activeWorkers !== null
+    ? brainStatus.activeWorkers : pulse?.activeWorkers;
+  const deviationsFound = brainStatus?.online && brainStatus.deviationCount !== null
+    ? brainStatus.deviationCount : pulse?.deviationsFound;
+  const progressPercent = brainStatus?.online && brainStatus.progressPct !== null
+    ? brainStatus.progressPct : pulse?.progressPercent;
 
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto pb-10">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground uppercase font-mono">Digital Pulse</h1>
           <p className="text-muted-foreground text-sm mt-1">Astra-Eye Command Center Overview</p>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded-full text-xs font-medium font-mono">
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-emerald-500">LIVE FEED</span>
+        <div className="flex items-center gap-2">
+          {/* Mode indicator */}
+          <div className={cn(
+            "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium font-mono border",
+            brainStatus?.online
+              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-500"
+              : "bg-amber-500/10 border-amber-500/30 text-amber-500"
+          )}>
+            <div className={cn("w-2 h-2 rounded-full",
+              brainStatus?.online ? "bg-emerald-500 animate-pulse" : "bg-amber-500")} />
+            {brainStatus?.online ? "LIVE — AI BRAIN CONNECTED" : "TEST MODE — NO BRAIN"}
+          </div>
+          {/* Reset button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn("text-xs font-mono gap-1.5", showResetConfirm && "text-red-400 border border-red-400/30")}
+            onClick={handleReset}
+            disabled={adminReset.isPending}
+          >
+            <RotateCcw className="w-3 h-3" />
+            {showResetConfirm ? "CONFIRM RESET?" : "RESET DB"}
+          </Button>
         </div>
       </div>
 
-      {/* KPI Row */}
+      {/* KPI Row — uses live brain data when connected, DB data otherwise */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard 
           title="Safety Score" 
-          value={pulse?.safetyScore} 
+          value={safetyScore} 
           suffix="%" 
           icon={CheckCircle} 
-          valueClass={pulse?.safetyScore && pulse.safetyScore > 90 ? "text-emerald-500" : "text-amber-500"} 
+          valueClass={safetyScore && safetyScore > 90 ? "text-emerald-500" : "text-amber-500"} 
           isLoading={isLoadingPulse}
+          live={brainStatus?.online}
         />
         <MetricCard 
           title="Active Workers" 
-          value={pulse?.activeWorkers} 
+          value={activeWorkers} 
           icon={Users} 
           isLoading={isLoadingPulse}
+          live={brainStatus?.online}
         />
         <MetricCard 
           title="Deviations Found" 
-          value={pulse?.deviationsFound} 
+          value={deviationsFound} 
           icon={AlertTriangle} 
-          valueClass={pulse?.deviationsFound && pulse.deviationsFound > 0 ? "text-crimson-500" : "text-emerald-500"} 
+          valueClass={deviationsFound && deviationsFound > 0 ? "text-red-400" : "text-emerald-500"} 
           isLoading={isLoadingPulse}
+          live={brainStatus?.online}
         />
         <MetricCard 
           title="Progress" 
-          value={pulse?.progressPercent} 
+          value={progressPercent} 
           suffix="%" 
           icon={Construction} 
           isLoading={isLoadingPulse}
+          live={brainStatus?.online}
         />
+      </div>
+
+      {/* Brain Status & Live Feed section */}
+      <div className="grid gap-6 md:grid-cols-12">
+        <div className="md:col-span-8">
+          <Card className="bg-card/50 border-border overflow-hidden">
+            <CardHeader className="pb-3 border-b border-border">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <CameraIcon className="w-5 h-5 text-muted-foreground" />
+                Twinmotion Live Feed
+                {brainStatus?.online && (
+                  <span className="ml-2 text-xs font-normal font-mono text-muted-foreground">
+                    — AI overlay active
+                  </span>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <LiveFeedViewer height="h-[380px]" showOverlay />
+            </CardContent>
+          </Card>
+        </div>
+        <div className="md:col-span-4">
+          <BrainStatusPanel />
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-12">

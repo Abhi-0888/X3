@@ -18,8 +18,11 @@ import type {
 
 import type {
   ActivityDataPoint,
+  AdminResetBody,
+  AdminResetResponse,
   Alert,
   AuditReport,
+  BrainStatus,
   Camera,
   ConstructionProgress,
   CreateDroneScanBody,
@@ -30,10 +33,17 @@ import type {
   GenerateReportBody,
   HealthStatus,
   IdleAlert,
+  IngestAlert201,
+  IngestAlertBody,
+  IngestFrame200,
+  IngestFrameBody,
+  IngestHeartbeat200,
+  IngestHeartbeatBody,
   ListAlertsParams,
   ListAnomaliesParams,
   ListDroneScansParams,
   ListPPEViolationsParams,
+  LiveFrame,
   PPEViolation,
   SafetyScore,
   StructuralAnomaly,
@@ -1998,3 +2008,497 @@ export function useGetReport<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * @summary Receive a real-time metrics heartbeat from the AI brain
+ */
+export const getIngestHeartbeatUrl = () => {
+  return `/api/ingest/heartbeat`;
+};
+
+export const ingestHeartbeat = async (
+  ingestHeartbeatBody: IngestHeartbeatBody,
+  options?: RequestInit,
+): Promise<IngestHeartbeat200> => {
+  return customFetch<IngestHeartbeat200>(getIngestHeartbeatUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(ingestHeartbeatBody),
+  });
+};
+
+export const getIngestHeartbeatMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof ingestHeartbeat>>,
+    TError,
+    { data: BodyType<IngestHeartbeatBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof ingestHeartbeat>>,
+  TError,
+  { data: BodyType<IngestHeartbeatBody> },
+  TContext
+> => {
+  const mutationKey = ["ingestHeartbeat"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof ingestHeartbeat>>,
+    { data: BodyType<IngestHeartbeatBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return ingestHeartbeat(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type IngestHeartbeatMutationResult = NonNullable<
+  Awaited<ReturnType<typeof ingestHeartbeat>>
+>;
+export type IngestHeartbeatMutationBody = BodyType<IngestHeartbeatBody>;
+export type IngestHeartbeatMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Receive a real-time metrics heartbeat from the AI brain
+ */
+export const useIngestHeartbeat = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof ingestHeartbeat>>,
+    TError,
+    { data: BodyType<IngestHeartbeatBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof ingestHeartbeat>>,
+  TError,
+  { data: BodyType<IngestHeartbeatBody> },
+  TContext
+> => {
+  return useMutation(getIngestHeartbeatMutationOptions(options));
+};
+
+/**
+ * @summary Receive a processed video frame (base64 JPEG) from the AI brain
+ */
+export const getIngestFrameUrl = () => {
+  return `/api/ingest/frame`;
+};
+
+export const ingestFrame = async (
+  ingestFrameBody: IngestFrameBody,
+  options?: RequestInit,
+): Promise<IngestFrame200> => {
+  return customFetch<IngestFrame200>(getIngestFrameUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(ingestFrameBody),
+  });
+};
+
+export const getIngestFrameMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof ingestFrame>>,
+    TError,
+    { data: BodyType<IngestFrameBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof ingestFrame>>,
+  TError,
+  { data: BodyType<IngestFrameBody> },
+  TContext
+> => {
+  const mutationKey = ["ingestFrame"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof ingestFrame>>,
+    { data: BodyType<IngestFrameBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return ingestFrame(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type IngestFrameMutationResult = NonNullable<
+  Awaited<ReturnType<typeof ingestFrame>>
+>;
+export type IngestFrameMutationBody = BodyType<IngestFrameBody>;
+export type IngestFrameMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Receive a processed video frame (base64 JPEG) from the AI brain
+ */
+export const useIngestFrame = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof ingestFrame>>,
+    TError,
+    { data: BodyType<IngestFrameBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof ingestFrame>>,
+  TError,
+  { data: BodyType<IngestFrameBody> },
+  TContext
+> => {
+  return useMutation(getIngestFrameMutationOptions(options));
+};
+
+/**
+ * @summary Receive a new alert from the AI brain
+ */
+export const getIngestAlertUrl = () => {
+  return `/api/ingest/alert`;
+};
+
+export const ingestAlert = async (
+  ingestAlertBody: IngestAlertBody,
+  options?: RequestInit,
+): Promise<IngestAlert201> => {
+  return customFetch<IngestAlert201>(getIngestAlertUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(ingestAlertBody),
+  });
+};
+
+export const getIngestAlertMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof ingestAlert>>,
+    TError,
+    { data: BodyType<IngestAlertBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof ingestAlert>>,
+  TError,
+  { data: BodyType<IngestAlertBody> },
+  TContext
+> => {
+  const mutationKey = ["ingestAlert"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof ingestAlert>>,
+    { data: BodyType<IngestAlertBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return ingestAlert(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type IngestAlertMutationResult = NonNullable<
+  Awaited<ReturnType<typeof ingestAlert>>
+>;
+export type IngestAlertMutationBody = BodyType<IngestAlertBody>;
+export type IngestAlertMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Receive a new alert from the AI brain
+ */
+export const useIngestAlert = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof ingestAlert>>,
+    TError,
+    { data: BodyType<IngestAlertBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof ingestAlert>>,
+  TError,
+  { data: BodyType<IngestAlertBody> },
+  TContext
+> => {
+  return useMutation(getIngestAlertMutationOptions(options));
+};
+
+/**
+ * @summary Get brain connection status and latest real-time metrics
+ */
+export const getGetLiveStatusUrl = () => {
+  return `/api/live/status`;
+};
+
+export const getLiveStatus = async (
+  options?: RequestInit,
+): Promise<BrainStatus> => {
+  return customFetch<BrainStatus>(getGetLiveStatusUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetLiveStatusQueryKey = () => {
+  return [`/api/live/status`] as const;
+};
+
+export const getGetLiveStatusQueryOptions = <
+  TData = Awaited<ReturnType<typeof getLiveStatus>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getLiveStatus>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetLiveStatusQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getLiveStatus>>> = ({
+    signal,
+  }) => getLiveStatus({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getLiveStatus>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetLiveStatusQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getLiveStatus>>
+>;
+export type GetLiveStatusQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get brain connection status and latest real-time metrics
+ */
+
+export function useGetLiveStatus<
+  TData = Awaited<ReturnType<typeof getLiveStatus>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getLiveStatus>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetLiveStatusQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Get the latest processed video frame from the AI brain
+ */
+export const getGetLiveFrameUrl = () => {
+  return `/api/live/frame`;
+};
+
+export const getLiveFrame = async (
+  options?: RequestInit,
+): Promise<LiveFrame> => {
+  return customFetch<LiveFrame>(getGetLiveFrameUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetLiveFrameQueryKey = () => {
+  return [`/api/live/frame`] as const;
+};
+
+export const getGetLiveFrameQueryOptions = <
+  TData = Awaited<ReturnType<typeof getLiveFrame>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getLiveFrame>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetLiveFrameQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getLiveFrame>>> = ({
+    signal,
+  }) => getLiveFrame({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getLiveFrame>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetLiveFrameQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getLiveFrame>>
+>;
+export type GetLiveFrameQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get the latest processed video frame from the AI brain
+ */
+
+export function useGetLiveFrame<
+  TData = Awaited<ReturnType<typeof getLiveFrame>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getLiveFrame>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetLiveFrameQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Reset database to clean state for production mode
+ */
+export const getAdminResetUrl = () => {
+  return `/api/admin/reset`;
+};
+
+export const adminReset = async (
+  adminResetBody: AdminResetBody,
+  options?: RequestInit,
+): Promise<AdminResetResponse> => {
+  return customFetch<AdminResetResponse>(getAdminResetUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(adminResetBody),
+  });
+};
+
+export const getAdminResetMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminReset>>,
+    TError,
+    { data: BodyType<AdminResetBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof adminReset>>,
+  TError,
+  { data: BodyType<AdminResetBody> },
+  TContext
+> => {
+  const mutationKey = ["adminReset"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof adminReset>>,
+    { data: BodyType<AdminResetBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return adminReset(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AdminResetMutationResult = NonNullable<
+  Awaited<ReturnType<typeof adminReset>>
+>;
+export type AdminResetMutationBody = BodyType<AdminResetBody>;
+export type AdminResetMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Reset database to clean state for production mode
+ */
+export const useAdminReset = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminReset>>,
+    TError,
+    { data: BodyType<AdminResetBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof adminReset>>,
+  TError,
+  { data: BodyType<AdminResetBody> },
+  TContext
+> => {
+  return useMutation(getAdminResetMutationOptions(options));
+};
