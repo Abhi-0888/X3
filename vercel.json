@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "name": "aeci-dashboard",
+  "builds": [
+    {
+      "src": "artifacts/aeci-dashboard/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "buildCommand": "cd artifacts/aeci-dashboard && pnpm install && pnpm run build",
+  "outputDirectory": "artifacts/aeci-dashboard/dist",
+  "framework": "vite",
+  "installCommand": "pnpm install"
+}
