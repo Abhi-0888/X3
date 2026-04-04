@@ -3,8 +3,8 @@
   "name": "aeci-dashboard",
   "buildCommand": "cd artifacts/aeci-dashboard && npm install && npm run build",
   "outputDirectory": "artifacts/aeci-dashboard/dist/public",
+  "installCommand": "cd artifacts/aeci-dashboard && npm install",
   "framework": "vite",
-  "installCommand": "npm install",
   "rewrites": [
     {
       "source": "/api/(.*)",
