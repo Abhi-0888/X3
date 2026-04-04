@@ -1,8 +1,27 @@
 {
   "version": 2,
-  "name": "aeci-dashboard",
-  "buildCommand": "npm install && npm run build",
-  "outputDirectory": "dist/public",
+  "buildCommand": "cd artifacts/aeci-dashboard && npm install && npm run build",
+  "outputDirectory": "artifacts/aeci-dashboard/dist/public",
   "installCommand": "npm install",
-  "framework": "vite"
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    }
+  ]
 }
