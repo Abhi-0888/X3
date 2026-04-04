@@ -1,21 +1,8 @@
 {
   "version": 2,
   "name": "aeci-dashboard",
-  "buildCommand": "cd artifacts/aeci-dashboard && npm install && npm run build",
-  "outputDirectory": "artifacts/aeci-dashboard/dist/public",
-  "installCommand": "cd artifacts/aeci-dashboard && npm install",
-  "framework": "vite",
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/index.js"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/$1"
-    }
-  ],
-  "env": {
-    "DATABASE_URL": "@mongodb-uri"
-  }
+  "buildCommand": "npm install && npm run build",
+  "outputDirectory": "dist/public",
+  "installCommand": "npm install",
+  "framework": "vite"
 }
