@@ -1,4 +1,4 @@
-import { useGetLiveStatus } from "@workspace/api-client-react";
+import { useGetLiveStatus } from "../api-client";
 import { cn } from "@/lib/utils";
 import { Wifi, WifiOff, Brain, Camera, Activity } from "lucide-react";
 
