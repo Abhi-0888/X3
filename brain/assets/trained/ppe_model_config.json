@@ -1,0 +1,121 @@
+{
+  "model_path": "D:\\SrmAP\\Fullstack\\X3\\brain\\assets\\trained\\construction_ppe_yolov8.pt",
+  "model_type": "yolov8n",
+  "description": "YOLOv8 configured for construction site PPE detection",
+  "confidence_threshold": 0.4,
+  "iou_threshold": 0.45,
+  "classes": {
+    "person": {
+      "coco_ids": [
+        0
+      ],
+      "description": "Detected worker/person on site",
+      "required_ppe": [
+        "helmet",
+        "vest"
+      ]
+    }
+  },
+  "ppe_detection_strategy": "region_based",
+  "ppe_regions": {
+    "helmet": {
+      "description": "Head protection \u2014 hard hat or safety helmet",
+      "detection_zone": "upper_15pct",
+      "method": "color_and_shape",
+      "colors_hsv": {
+        "yellow_helmet": {
+          "h_range": [
+            20,
+            35
+          ],
+          "s_min": 100,
+          "v_min": 100
+        },
+        "white_helmet": {
+          "h_range": [
+            0,
+            180
+          ],
+          "s_max": 50,
+          "v_min": 200
+        },
+        "orange_helmet": {
+          "h_range": [
+            10,
+            25
+          ],
+          "s_min": 100,
+          "v_min": 100
+        },
+        "red_helmet": {
+          "h_range": [
+            0,
+            10
+          ],
+          "s_min": 100,
+          "v_min": 100
+        },
+        "blue_helmet": {
+          "h_range": [
+            100,
+            130
+          ],
+          "s_min": 50,
+          "v_min": 50
+        }
+      },
+      "min_size_ratio": 0.05,
+      "circularity_min": 0.3
+    },
+    "vest": {
+      "description": "High-visibility safety vest",
+      "detection_zone": "torso_30_to_70pct",
+      "method": "color_and_shape",
+      "colors_hsv": {
+        "yellow_vest": {
+          "h_range": [
+            20,
+            35
+          ],
+          "s_min": 80,
+          "v_min": 80
+        },
+        "orange_vest": {
+          "h_range": [
+            10,
+            25
+          ],
+          "s_min": 80,
+          "v_min": 80
+        },
+        "green_vest": {
+          "h_range": [
+            35,
+            85
+          ],
+          "s_min": 60,
+          "v_min": 60
+        }
+      },
+      "min_area_ratio": 0.08
+    },
+    "gloves": {
+      "description": "Safety gloves",
+      "detection_zone": "hands_below_60pct",
+      "method": "color_deviation",
+      "note": "Detected by color contrast with skin/clothing"
+    }
+  },
+  "danger_zone_config": {
+    "breach_cooldown_sec": 30,
+    "alert_on_entry": true,
+    "alert_on_dwell": true,
+    "dwell_threshold_sec": 10
+  },
+  "training_info": {
+    "base_model": "yolov8n (COCO pretrained)",
+    "ppe_detection": "Region-based color+shape analysis on detected persons",
+    "trained_on": "2026-04-04T14:26:44.851229",
+    "note": "Person detection via YOLO, PPE via region-based CV analysis"
+  }
+}

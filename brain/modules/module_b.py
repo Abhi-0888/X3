@@ -87,15 +87,42 @@ class Guardian360:
         try:
             from ultralytics import YOLO
             p = Path(path)
-            model_path = str(p) if p.exists() else "yolov8n.pt"
-            if not p.exists():
+
+            # Try trained model first, then custom path, then pretrained
+            trained_model = Path(__file__).parent.parent / "assets" / "trained" / "construction_ppe_yolov8.pt"
+            if trained_model.exists():
+                model_path = str(trained_model)
+                log.info(f"Using trained construction PPE model: {model_path}")
+            elif p.exists():
+                model_path = str(p)
+            else:
+                model_path = "yolov8n.pt"
                 log.warning(f"Custom YOLO weights not found at {path}. Using pretrained yolov8n.")
+
             self._model = YOLO(model_path)
             log.info(f"YOLO model loaded: {model_path}")
+
+            # Load PPE config if available
+            self._load_ppe_config()
         except ImportError:
             log.error("ultralytics not installed. Run: pip install ultralytics")
         except Exception as e:
             log.error(f"Failed to load YOLO model: {e}")
+
+    def _load_ppe_config(self):
+        """Load the trained PPE detection configuration."""
+        config_path = Path(__file__).parent.parent / "assets" / "trained" / "ppe_model_config.json"
+        if config_path.exists():
+            try:
+                import json
+                with open(config_path) as f:
+                    self._ppe_config = json.load(f)
+                log.info("PPE detection config loaded (region-based helmet/vest analysis)")
+            except Exception as e:
+                log.warning(f"Could not load PPE config: {e}")
+                self._ppe_config = {}
+        else:
+            self._ppe_config = {}
 
     def _compile_zones(self, zones: list[dict]):
         """Pre-compile danger zone polygons as numpy arrays."""
@@ -193,7 +220,7 @@ class Guardian360:
                 confidence=person["conf"],
             )
 
-            # Check if a helmet/vest bbox overlaps this person's upper body
+            # Method 1: Check if YOLO-detected PPE items overlap this person
             for ppe in ppe_items:
                 overlap = self._iou_upper(ppe["bbox"], (px1, py1, px2, py2))
                 if overlap > 0.1:
@@ -203,6 +230,14 @@ class Guardian360:
                         worker.has_vest = True
                     elif ppe["type"] == "gloves":
                         worker.has_gloves = True
+
+            # Method 2: Region-based color/shape analysis (when YOLO lacks PPE classes)
+            if not worker.has_helmet or not worker.has_vest:
+                helmet_det, vest_det = self._detect_ppe_by_region(frame, (px1, py1, px2, py2))
+                if helmet_det and not worker.has_helmet:
+                    worker.has_helmet = True
+                if vest_det and not worker.has_vest:
+                    worker.has_vest = True
 
             # ── Buffer Zone check ─────────────────────────────────────────
             cx, cy = worker.centroid
@@ -269,6 +304,78 @@ class Guardian360:
             "zone_breaches": zone_breaches,
             "alerts": alerts,
         }
+
+    def _detect_ppe_by_region(self, frame: np.ndarray, person_bbox: tuple) -> tuple[bool, bool]:
+        """
+        Region-based PPE detection using color analysis within the person bounding box.
+        Analyzes head region for hard hat colors, torso region for hi-vis vest colors.
+        Returns (has_helmet, has_vest).
+        """
+        px1, py1, px2, py2 = person_bbox
+        ph = py2 - py1
+        pw = px2 - px1
+        if ph < 30 or pw < 15:
+            return False, False
+
+        h, w = frame.shape[:2]
+        # Clamp to frame bounds
+        px1, py1 = max(0, px1), max(0, py1)
+        px2, py2 = min(w, px2), min(h, py2)
+
+        # ── Helmet detection: analyze top 20% of person bbox ──────────────
+        head_y2 = py1 + int(ph * 0.20)
+        head_region = frame[py1:head_y2, px1:px2]
+        has_helmet = False
+
+        if head_region.size > 0:
+            hsv_head = cv2.cvtColor(head_region, cv2.COLOR_BGR2HSV)
+
+            # Check for common hard hat colors
+            helmet_masks = [
+                # Yellow helmet (most common)
+                cv2.inRange(hsv_head, np.array([20, 100, 100]), np.array([35, 255, 255])),
+                # White helmet
+                cv2.inRange(hsv_head, np.array([0, 0, 200]), np.array([180, 50, 255])),
+                # Orange helmet
+                cv2.inRange(hsv_head, np.array([10, 100, 100]), np.array([25, 255, 255])),
+                # Red helmet
+                cv2.inRange(hsv_head, np.array([0, 100, 100]), np.array([10, 255, 255])),
+                # Blue helmet
+                cv2.inRange(hsv_head, np.array([100, 50, 50]), np.array([130, 255, 255])),
+            ]
+
+            for mask in helmet_masks:
+                ratio = np.count_nonzero(mask) / max(mask.size, 1)
+                if ratio > 0.15:  # >15% of head region matches helmet color
+                    has_helmet = True
+                    break
+
+        # ── Vest detection: analyze torso (30%–70% of person height) ──────
+        torso_y1 = py1 + int(ph * 0.30)
+        torso_y2 = py1 + int(ph * 0.70)
+        torso_region = frame[torso_y1:torso_y2, px1:px2]
+        has_vest = False
+
+        if torso_region.size > 0:
+            hsv_torso = cv2.cvtColor(torso_region, cv2.COLOR_BGR2HSV)
+
+            # Check for hi-vis vest colors
+            vest_masks = [
+                # Bright yellow/lime vest
+                cv2.inRange(hsv_torso, np.array([20, 80, 80]), np.array([35, 255, 255])),
+                # Orange vest
+                cv2.inRange(hsv_torso, np.array([10, 80, 80]), np.array([25, 255, 255])),
+                # Green vest
+                cv2.inRange(hsv_torso, np.array([35, 60, 60]), np.array([85, 255, 255])),
+            ]
+
+            for mask in vest_masks:
+                ratio = np.count_nonzero(mask) / max(mask.size, 1)
+                if ratio > 0.10:  # >10% of torso matches vest color
+                    has_vest = True
+                    break
+
+        return has_helmet, has_vest
 
     def _iou_upper(self, ppe_bbox, person_bbox) -> float:
         """Calculate overlap between PPE item and person's upper third (head/chest area)."""

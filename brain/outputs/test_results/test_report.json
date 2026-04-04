@@ -1,0 +1,432 @@
+{
+  "timestamp": "2026-04-04T14:41:52",
+  "total_tests": 47,
+  "passed": 47,
+  "failed": 0,
+  "elapsed_sec": 33.0,
+  "test_suites": [
+    {
+      "module": "DB",
+      "test_name": "Prototype Database",
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "pass_rate": 100.0,
+      "details": [
+        {
+          "test": "DB file exists",
+          "status": "PASS"
+        },
+        {
+          "test": "DB loads",
+          "status": "PASS",
+          "views": 35
+        },
+        {
+          "test": "View matching works",
+          "status": "PASS",
+          "top_score": 0.9143,
+          "top_view": "finished_Image13"
+        },
+        {
+          "test": "Deviation computation",
+          "status": "PASS",
+          "deviation_pct": 55.5,
+          "ssim_score": 0.3276
+        }
+      ]
+    },
+    {
+      "module": "Baselines",
+      "test_name": "Baselines Data",
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "details": [
+        {
+          "test": "Baselines file exists",
+          "status": "PASS"
+        },
+        {
+          "test": "Has avg_progress_pct",
+          "status": "PASS",
+          "value": 46.8
+        },
+        {
+          "test": "Has per-image data",
+          "status": "PASS",
+          "count": 47
+        }
+      ]
+    },
+    {
+      "module": "PPE_Config",
+      "test_name": "PPE Model Configuration",
+      "total": 5,
+      "passed": 5,
+      "failed": 0,
+      "details": [
+        {
+          "test": "PPE config exists",
+          "status": "PASS"
+        },
+        {
+          "test": "YOLO model exists",
+          "status": "PASS"
+        },
+        {
+          "test": "Has PPE regions config",
+          "status": "PASS"
+        },
+        {
+          "test": "Helmet detection config",
+          "status": "PASS"
+        },
+        {
+          "test": "Vest detection config",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "module": "A",
+      "test_name": "Structural Deviation Detection",
+      "total": 15,
+      "passed": 15,
+      "failed": 0,
+      "pass_rate": 100.0,
+      "details": [
+        {
+          "image": "Image28.png",
+          "status": "PASS",
+          "deviation_pct": 55.5,
+          "progress_pct": 32.8,
+          "ssim_score": 0.3276,
+          "matched_view": "finished_Image13",
+          "anomaly_zones": 13,
+          "alerts": 4
+        },
+        {
+          "image": "Image29.png",
+          "status": "PASS",
+          "deviation_pct": 56.55,
+          "progress_pct": 35.8,
+          "ssim_score": 0.3584,
+          "matched_view": "finished_Image13",
+          "anomaly_zones": 9,
+          "alerts": 3
+        },
+        {
+          "image": "Image30.png",
+          "status": "PASS",
+          "deviation_pct": 50.05,
+          "progress_pct": 41.8,
+          "ssim_score": 0.4179,
+          "matched_view": "finished_Image13",
+          "anomaly_zones": 5,
+          "alerts": 3
+        },
+        {
+          "image": "Image31.png",
+          "status": "PASS",
+          "deviation_pct": 61.32,
+          "progress_pct": 33.7,
+          "ssim_score": 0.3374,
+          "matched_view": "finished_Image13",
+          "anomaly_zones": 2,
+          "alerts": 2
+        },
+        {
+          "image": "Image32.png",
+          "status": "PASS",
+          "deviation_pct": 62.78,
+          "progress_pct": 32.3,
+          "ssim_score": 0.3226,
+          "matched_view": "finished_Image13",
+          "anomaly_zones": 1,
+          "alerts": 2
+        },
+        {
+          "image": "Image33.png",
+          "status": "PASS",
+          "deviation_pct": 58.47,
+          "progress_pct": 34.9,
+          "ssim_score": 0.3492,
+          "matched_view": "finished_Image13",
+          "anomaly_zones": 4,
+          "alerts": 3
+        },
+        {
+          "image": "Image34.png",
+          "status": "PASS",
+          "deviation_pct": 55.99,
+          "progress_pct": 38.8,
+          "ssim_score": 0.3878,
+          "matched_view": "finished_Image13",
+          "anomaly_zones": 4,
+          "alerts": 3
+        },
+        {
+          "image": "Image35.png",
+          "status": "PASS",
+          "deviation_pct": 58.58,
+          "progress_pct": 37.1,
+          "ssim_score": 0.3708,
+          "matched_view": "finished_Image13",
+          "anomaly_zones": 4,
+          "alerts": 2
+        },
+        {
+          "image": "Image36.png",
+          "status": "PASS",
+          "deviation_pct": 51.34,
+          "progress_pct": 47.0,
+          "ssim_score": 0.4704,
+          "matched_view": "finished_Image13",
+          "anomaly_zones": 5,
+          "alerts": 3
+        },
+        {
+          "image": "Image37.png",
+          "status": "PASS",
+          "deviation_pct": 31.36,
+          "progress_pct": 70.4,
+          "ssim_score": 0.7039,
+          "matched_view": "finished_Video2 - Snapshot61",
+          "anomaly_zones": 5,
+          "alerts": 3
+        },
+        {
+          "image": "Image38.png",
+          "status": "PASS",
+          "deviation_pct": 35.59,
+          "progress_pct": 64.7,
+          "ssim_score": 0.6466,
+          "matched_view": "finished_Video2 - Snapshot61",
+          "anomaly_zones": 5,
+          "alerts": 3
+        },
+        {
+          "image": "Image39.png",
+          "status": "PASS",
+          "deviation_pct": 44.55,
+          "progress_pct": 59.5,
+          "ssim_score": 0.5953,
+          "matched_view": "finished_Video2 - Snapshot61",
+          "anomaly_zones": 4,
+          "alerts": 2
+        },
+        {
+          "image": "Image40.png",
+          "status": "PASS",
+          "deviation_pct": 41.32,
+          "progress_pct": 56.2,
+          "ssim_score": 0.5623,
+          "matched_view": "finished_Video2 - Snapshot61",
+          "anomaly_zones": 5,
+          "alerts": 3
+        },
+        {
+          "image": "Image41.png",
+          "status": "PASS",
+          "deviation_pct": 42.06,
+          "progress_pct": 56.3,
+          "ssim_score": 0.5631,
+          "matched_view": "finished_Video2 - Snapshot61",
+          "anomaly_zones": 6,
+          "alerts": 2
+        },
+        {
+          "image": "Image42.png",
+          "status": "PASS",
+          "deviation_pct": 43.1,
+          "progress_pct": 56.5,
+          "ssim_score": 0.5648,
+          "matched_view": "finished_Video2 - Snapshot61",
+          "anomaly_zones": 5,
+          "alerts": 3
+        }
+      ]
+    },
+    {
+      "module": "A_finished",
+      "test_name": "Finished Image Baseline",
+      "total": 10,
+      "passed": 10,
+      "failed": 0,
+      "pass_rate": 100.0,
+      "details": [
+        {
+          "image": "Image1.png",
+          "status": "PASS",
+          "deviation_pct": 46.75,
+          "progress_pct": 55.3,
+          "ssim_score": 0.5534
+        },
+        {
+          "image": "Image10.png",
+          "status": "PASS",
+          "deviation_pct": 49.2,
+          "progress_pct": 54.5,
+          "ssim_score": 0.5445
+        },
+        {
+          "image": "Image11.png",
+          "status": "PASS",
+          "deviation_pct": 50.85,
+          "progress_pct": 49.1,
+          "ssim_score": 0.4914
+        },
+        {
+          "image": "Image12.png",
+          "status": "PASS",
+          "deviation_pct": 50.53,
+          "progress_pct": 47.1,
+          "ssim_score": 0.4706
+        },
+        {
+          "image": "Image13.png",
+          "status": "PASS",
+          "deviation_pct": 0.0,
+          "progress_pct": 100.0,
+          "ssim_score": 1.0
+        },
+        {
+          "image": "Image14.png",
+          "status": "PASS",
+          "deviation_pct": 53.62,
+          "progress_pct": 41.7,
+          "ssim_score": 0.4171
+        },
+        {
+          "image": "Image15.png",
+          "status": "PASS",
+          "deviation_pct": 54.84,
+          "progress_pct": 41.8,
+          "ssim_score": 0.4176
+        },
+        {
+          "image": "Image16.png",
+          "status": "PASS",
+          "deviation_pct": 51.41,
+          "progress_pct": 41.9,
+          "ssim_score": 0.4194
+        },
+        {
+          "image": "Image17.png",
+          "status": "PASS",
+          "deviation_pct": 52.29,
+          "progress_pct": 42.3,
+          "ssim_score": 0.4231
+        },
+        {
+          "image": "Image18.png",
+          "status": "PASS",
+          "deviation_pct": 53.31,
+          "progress_pct": 41.9,
+          "ssim_score": 0.4189
+        }
+      ]
+    },
+    {
+      "module": "B",
+      "test_name": "PPE Detection Pipeline",
+      "total": 10,
+      "passed": 10,
+      "failed": 0,
+      "pass_rate": 100.0,
+      "details": [
+        {
+          "image": "Image28.png",
+          "status": "PASS",
+          "workers_detected": 0,
+          "safety_score": 40.0,
+          "violations": 0,
+          "zone_breaches": 0,
+          "alerts": 0
+        },
+        {
+          "image": "Image29.png",
+          "status": "PASS",
+          "workers_detected": 0,
+          "safety_score": 40.0,
+          "violations": 0,
+          "zone_breaches": 0,
+          "alerts": 0
+        },
+        {
+          "image": "Image30.png",
+          "status": "PASS",
+          "workers_detected": 0,
+          "safety_score": 40.0,
+          "violations": 0,
+          "zone_breaches": 0,
+          "alerts": 0
+        },
+        {
+          "image": "Image31.png",
+          "status": "PASS",
+          "workers_detected": 0,
+          "safety_score": 40.0,
+          "violations": 0,
+          "zone_breaches": 0,
+          "alerts": 0
+        },
+        {
+          "image": "Image32.png",
+          "status": "PASS",
+          "workers_detected": 0,
+          "safety_score": 40.0,
+          "violations": 0,
+          "zone_breaches": 0,
+          "alerts": 0
+        },
+        {
+          "image": "Image1.png",
+          "status": "PASS",
+          "workers_detected": 0,
+          "safety_score": 40.0,
+          "violations": 0,
+          "zone_breaches": 0,
+          "alerts": 0
+        },
+        {
+          "image": "Image10.png",
+          "status": "PASS",
+          "workers_detected": 0,
+          "safety_score": 40.0,
+          "violations": 0,
+          "zone_breaches": 0,
+          "alerts": 0
+        },
+        {
+          "image": "Image11.png",
+          "status": "PASS",
+          "workers_detected": 0,
+          "safety_score": 40.0,
+          "violations": 0,
+          "zone_breaches": 0,
+          "alerts": 0
+        },
+        {
+          "image": "Image12.png",
+          "status": "PASS",
+          "workers_detected": 0,
+          "safety_score": 40.0,
+          "violations": 0,
+          "zone_breaches": 0,
+          "alerts": 0
+        },
+        {
+          "image": "Image13.png",
+          "status": "PASS",
+          "workers_detected": 0,
+          "safety_score": 40.0,
+          "violations": 0,
+          "zone_breaches": 0,
+          "alerts": 0
+        }
+      ]
+    }
+  ]
+}

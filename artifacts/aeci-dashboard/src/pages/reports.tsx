@@ -16,7 +16,7 @@ export default function ReportsPage() {
 
   const [selectedReportId, setSelectedReportId] = useState<number | null>(null);
   const { data: selectedReport } = useGetReport(selectedReportId || 0, {
-    query: { enabled: !!selectedReportId }
+    query: { enabled: !!selectedReportId } as any
   });
 
   const [isGenerating, setIsGenerating] = useState(false);
@@ -53,7 +53,7 @@ export default function ReportsPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {reports?.map(report => (
+        {(Array.isArray(reports) ? reports : []).map(report => (
           <Card key={report.id} className="flex flex-col hover:border-primary/50 transition-colors cursor-pointer group" onClick={() => setSelectedReportId(report.id)}>
             <CardHeader className="pb-3 border-b border-border/50">
               <div className="flex justify-between items-start">
@@ -153,7 +153,7 @@ export default function ReportsPage() {
                       AI Recommendations
                     </h3>
                     <ul className="space-y-3">
-                      {selectedReport.recommendations.map((rec, i) => (
+                      {(Array.isArray(selectedReport.recommendations) ? selectedReport.recommendations : []).map((rec, i) => (
                         <li key={i} className="flex gap-3 text-sm">
                           <div className="w-6 h-6 rounded bg-background flex items-center justify-center shrink-0 font-mono text-xs border border-border">{i+1}</div>
                           <span className="mt-0.5">{rec}</span>

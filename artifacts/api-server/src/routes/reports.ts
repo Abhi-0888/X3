@@ -1,29 +1,21 @@
 import { Router } from "express";
-import { db } from "@workspace/db";
 import {
-  auditReportsTable,
-  structuralAnomaliesTable,
-  ppeViolationsTable,
-  workersTable,
-} from "@workspace/db";
-import { eq, sql } from "drizzle-orm";
+  AuditReportModel,
+  StructuralAnomalyModel,
+  PPEViolationModel,
+  WorkerModel,
+} from "@workspace/db/schema";
 
 const router = Router();
 
 router.get("/reports", async (req, res) => {
   try {
-    const reports = await db
-      .select()
-      .from(auditReportsTable)
-      .orderBy(sql`${auditReportsTable.generatedAt} desc`);
-
-    res.json(
-      reports.map((r) => ({
-        ...r,
-        recommendations: r.recommendations as string[],
-        generatedAt: r.generatedAt?.toISOString(),
-      }))
-    );
+    const reports = await AuditReportModel.find().sort({ generatedAt: -1 });
+    res.json(reports.map((r) => ({
+      ...r.toObject(),
+      recommendations: r.recommendations as string[],
+      generatedAt: r.generatedAt?.toISOString(),
+    })));
   } catch (err) {
     req.log.error({ err }, "Error listing reports");
     res.status(500).json({ error: "Internal server error" });
@@ -32,16 +24,11 @@ router.get("/reports", async (req, res) => {
 
 router.get("/reports/:reportId", async (req, res) => {
   try {
-    const reportId = parseInt(req.params.reportId);
-    const [report] = await db
-      .select()
-      .from(auditReportsTable)
-      .where(eq(auditReportsTable.id, reportId));
-
+    const reportId = req.params.reportId;
+    const report = await AuditReportModel.findById(reportId);
     if (!report) return res.status(404).json({ error: "Report not found" });
-
     res.json({
-      ...report,
+      ...report.toObject(),
       recommendations: report.recommendations as string[],
       generatedAt: report.generatedAt?.toISOString(),
     });
@@ -61,9 +48,9 @@ router.post("/reports", async (req, res) => {
     } = req.body;
 
     const [anomalies, violations, workers] = await Promise.all([
-      db.select().from(structuralAnomaliesTable).where(eq(structuralAnomaliesTable.resolved, false)),
-      db.select().from(ppeViolationsTable).where(eq(ppeViolationsTable.resolved, false)),
-      db.select().from(workersTable),
+      StructuralAnomalyModel.find({ resolved: false }),
+      PPEViolationModel.find({ resolved: false }),
+      WorkerModel.find(),
     ]);
 
     const criticalAnomalies = anomalies.filter((a) => a.severity === "critical").length;
@@ -152,23 +139,20 @@ See below for prioritized action items.`;
       "Review and update danger zone perimeters for crane operational area",
     ].filter(Boolean);
 
-    const [report] = await db
-      .insert(auditReportsTable)
-      .values({
-        title: `AECI Audit Report — ${period}`,
-        period,
-        structuralSummary,
-        safetySummary,
-        efficiencySummary,
-        costImpactEstimate: costImpact,
-        riskLevel,
-        recommendations,
-        fullReport,
-      })
-      .returning();
+    const report = await AuditReportModel.create({
+      title: `AECI Audit Report — ${period}`,
+      period,
+      structuralSummary,
+      safetySummary,
+      efficiencySummary,
+      costImpactEstimate: costImpact,
+      riskLevel,
+      recommendations,
+      fullReport,
+    });
 
     res.status(201).json({
-      ...report,
+      ...report.toObject(),
       recommendations: report.recommendations as string[],
       generatedAt: report.generatedAt?.toISOString(),
     });

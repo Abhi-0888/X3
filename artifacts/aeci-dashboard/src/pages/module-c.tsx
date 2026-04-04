@@ -15,14 +15,14 @@ import { cn } from "@/lib/utils";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function ModuleCPage() {
-  const { data: efficiency } = useGetTeamEfficiency({ query: { refetchInterval: 10000 } });
-  const { data: workers } = useListWorkers({ query: { refetchInterval: 10000 } });
-  const { data: timeline } = useGetActivityTimeline({ query: { refetchInterval: 30000 } });
-  const { data: idleAlerts } = useListIdleAlerts({ query: { refetchInterval: 10000 } });
+  const { data: efficiency } = useGetTeamEfficiency({ query: { refetchInterval: 10000 } as any });
+  const { data: workers } = useListWorkers({ query: { refetchInterval: 10000 } as any });
+  const { data: timeline } = useGetActivityTimeline({ query: { refetchInterval: 30000 } as any });
+  const { data: idleAlerts } = useListIdleAlerts({ query: { refetchInterval: 10000 } as any });
 
   const [selectedWorkerId, setSelectedWorkerId] = useState<number | null>(null);
   const { data: selectedWorker } = useGetWorker(selectedWorkerId || 0, { 
-    query: { enabled: !!selectedWorkerId } 
+    query: { enabled: !!selectedWorkerId } as any
   });
 
   return (
@@ -77,7 +77,7 @@ export default function ModuleCPage() {
             <CardContent>
               <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={timeline || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <AreaChart data={Array.isArray(timeline) ? timeline : []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id="colorActive" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
@@ -113,7 +113,7 @@ export default function ModuleCPage() {
             <CardContent className="p-0">
               <ScrollArea className="h-[400px]">
                 <div className="divide-y divide-border">
-                  {workers?.map(worker => (
+                  {(Array.isArray(workers) ? workers : []).map(worker => (
                     <div 
                       key={worker.id} 
                       className="p-4 flex items-center justify-between hover:bg-muted/30 cursor-pointer transition-colors"
@@ -171,10 +171,10 @@ export default function ModuleCPage() {
             </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-border/50">
-                {idleAlerts?.length === 0 ? (
+                {!Array.isArray(idleAlerts) || idleAlerts.length === 0 ? (
                   <div className="p-4 text-center text-sm text-muted-foreground">No idle workers</div>
                 ) : (
-                  idleAlerts?.map(alert => (
+                  idleAlerts.map(alert => (
                     <div key={alert.id} className="p-4">
                       <div className="flex justify-between">
                         <span className="font-medium text-sm">{alert.workerName}</span>
@@ -199,7 +199,7 @@ export default function ModuleCPage() {
             </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-border">
-                {efficiency?.topPerformers?.map(p => (
+                {(Array.isArray(efficiency?.topPerformers) ? efficiency.topPerformers : []).map(p => (
                   <div key={p.workerId} className="p-3 flex justify-between items-center">
                     <span className="text-sm">{p.workerName}</span>
                     <Badge variant="outline" className="font-mono text-emerald-500 border-emerald-500/30 bg-emerald-500/10">
@@ -254,7 +254,7 @@ export default function ModuleCPage() {
               <div>
                 <h4 className="text-sm font-medium mb-3">Recent Activity</h4>
                 <div className="space-y-3">
-                  {selectedWorker.activityLog?.slice(0,5).map((log, i) => (
+                  {(Array.isArray(selectedWorker.activityLog) ? selectedWorker.activityLog : []).slice(0,5).map((log, i) => (
                     <div key={i} className="flex justify-between text-sm border-l-2 border-primary pl-3">
                       <div>
                         <div className="font-medium">{log.action}</div>

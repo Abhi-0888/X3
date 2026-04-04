@@ -14,11 +14,11 @@ import { cn } from "@/lib/utils";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 export default function ModuleBPage() {
-  const { data: cameras } = useListCameras({ query: { refetchInterval: 10000 } });
-  const { data: ppeViolations } = useListPPEViolations({ resolved: false }, { query: { refetchInterval: 10000 } });
-  const { data: dangerZones } = useListDangerZones({ query: { refetchInterval: 10000 } });
-  const { data: safetyScore } = useGetSafetyScore({ query: { refetchInterval: 10000 } });
-  const { data: zoneBreaches } = useListZoneBreaches({ query: { refetchInterval: 10000 } });
+  const { data: cameras } = useListCameras({ query: { refetchInterval: 10000 } as any });
+  const { data: ppeViolations } = useListPPEViolations({ resolved: false }, { query: { refetchInterval: 10000 } as any });
+  const { data: dangerZones } = useListDangerZones({ query: { refetchInterval: 10000 } as any });
+  const { data: safetyScore } = useGetSafetyScore({ query: { refetchInterval: 10000 } as any });
+  const { data: zoneBreaches } = useListZoneBreaches({ query: { refetchInterval: 10000 } as any });
 
   const pieData = [
     { name: "Compliant", value: safetyScore?.workersByStatus?.compliant || 0, color: "hsl(var(--success))" },
@@ -47,7 +47,7 @@ export default function ModuleBPage() {
             </CardHeader>
             <CardContent className="p-4 bg-muted/20">
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                {cameras?.map((camera) => (
+                {(Array.isArray(cameras) ? cameras : []).map((camera) => (
                   <div key={camera.id} className={cn("relative aspect-video bg-black rounded-md overflow-hidden border", camera.status === 'offline' ? "border-destructive/50" : "border-border")}>
                     {camera.status === 'offline' ? (
                       <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
@@ -92,12 +92,12 @@ export default function ModuleBPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {ppeViolations?.length === 0 ? (
+                  {!Array.isArray(ppeViolations) || ppeViolations.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={5} className="text-center text-muted-foreground h-24">No active violations</TableCell>
                     </TableRow>
                   ) : (
-                    ppeViolations?.map(v => (
+                    ppeViolations.map(v => (
                       <TableRow key={v.id}>
                         <TableCell className="font-medium">{v.workerName}</TableCell>
                         <TableCell>
@@ -184,7 +184,7 @@ export default function ModuleBPage() {
             </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-border">
-                {dangerZones?.map(zone => (
+                {(Array.isArray(dangerZones) ? dangerZones : []).map(zone => (
                   <div key={zone.id} className="p-4">
                     <div className="flex justify-between items-start mb-2">
                       <div className="font-medium text-sm">{zone.name}</div>
@@ -195,7 +195,7 @@ export default function ModuleBPage() {
                     <div className="text-xs text-muted-foreground capitalize mb-2">{zone.type.replace('_', ' ')}</div>
                     
                     {/* Related Breaches */}
-                    {zoneBreaches?.filter(b => b.zoneId === zone.id && !b.exitTime).length > 0 && (
+                    {(Array.isArray(zoneBreaches) ? zoneBreaches : []).filter(b => b.zoneId === zone.id && !b.exitTime).length > 0 && (
                       <div className="bg-destructive/10 text-destructive text-xs p-2 rounded mt-2 flex items-center gap-2 border border-destructive/20">
                         <div className="w-1.5 h-1.5 rounded-full bg-destructive animate-pulse" />
                         Active breach detected

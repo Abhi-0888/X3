@@ -2,17 +2,16 @@
  * Admin Routes — database management and mode switching
  */
 import { Router, type IRouter } from "express";
-import { db } from "@workspace/db";
 import {
-  alertsTable,
-  ppeViolationsTable,
-  zoneBreachesTable,
-  idleAlertsTable,
-  droneScansTable,
-  structuralAnomaliesTable,
-  auditReportsTable,
-  activityTimelineTable,
-  dailyProgressTable,
+  AlertModel,
+  PPEViolationModel,
+  ZoneBreachModel,
+  IdleAlertModel,
+  DroneScanModel,
+  StructuralAnomalyModel,
+  AuditReportModel,
+  ActivityTimelineModel,
+  DailyProgressModel,
 } from "@workspace/db/schema";
 import { logger } from "../lib/logger";
 import { liveBrainState } from "../lib/brain-state";
@@ -34,15 +33,15 @@ router.post("/admin/reset", async (req, res) => {
 
   try {
     // Clear all event/alert data tables
-    await db.delete(alertsTable);
-    await db.delete(ppeViolationsTable);
-    await db.delete(zoneBreachesTable);
-    await db.delete(idleAlertsTable);
-    await db.delete(droneScansTable);
-    await db.delete(structuralAnomaliesTable);
-    await db.delete(auditReportsTable);
-    await db.delete(activityTimelineTable);
-    await db.delete(dailyProgressTable);
+    await AlertModel.deleteMany({});
+    await PPEViolationModel.deleteMany({});
+    await ZoneBreachModel.deleteMany({});
+    await IdleAlertModel.deleteMany({});
+    await DroneScanModel.deleteMany({});
+    await StructuralAnomalyModel.deleteMany({});
+    await AuditReportModel.deleteMany({});
+    await ActivityTimelineModel.deleteMany({});
+    await DailyProgressModel.deleteMany({});
 
     // Reset the in-memory brain state
     liveBrainState.reset();

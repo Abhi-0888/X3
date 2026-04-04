@@ -47,3 +47,11 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Brain — training data & large model files
+brain/data/
+brain/assets/trained/*.pkl
+brain/assets/trained/*.pt
+brain/venv/
+*.zip
+yolov8*.pt

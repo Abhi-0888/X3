@@ -1,0 +1,385 @@
+{
+  "timestamp": "2026-04-04T14:25:42.742146",
+  "total_images": 47,
+  "processed": 47,
+  "avg_progress_pct": 46.8,
+  "avg_deviation_pct": 47.7,
+  "per_image": {
+    "Image28": {
+      "matched_view": "finished_Image13",
+      "match_score": 0.9143,
+      "deviation_pct": 55.5,
+      "ssim_score": 0.3276,
+      "progress_pct": 32.8,
+      "edge_diff_pct": 18.38
+    },
+    "Image29": {
+      "matched_view": "finished_Image14",
+      "match_score": 0.9181,
+      "deviation_pct": 44.2,
+      "ssim_score": 0.4676,
+      "progress_pct": 46.8,
+      "edge_diff_pct": 13.92
+    },
+    "Image30": {
+      "matched_view": "finished_Image22",
+      "match_score": 0.4369,
+      "deviation_pct": 49.15,
+      "ssim_score": 0.4789,
+      "progress_pct": 47.9,
+      "edge_diff_pct": 10.79
+    },
+    "Image31": {
+      "matched_view": "finished_Image25",
+      "match_score": 0.8717,
+      "deviation_pct": 50.22,
+      "ssim_score": 0.4463,
+      "progress_pct": 44.6,
+      "edge_diff_pct": 12.26
+    },
+    "Image32": {
+      "matched_view": "finished_Image25",
+      "match_score": 0.7309,
+      "deviation_pct": 54.73,
+      "ssim_score": 0.4,
+      "progress_pct": 40.0,
+      "edge_diff_pct": 12.97
+    },
+    "Image33": {
+      "matched_view": "finished_Image10",
+      "match_score": 0.5089,
+      "deviation_pct": 57.51,
+      "ssim_score": 0.3939,
+      "progress_pct": 39.4,
+      "edge_diff_pct": 10.88
+    },
+    "Image34": {
+      "matched_view": "finished_Image11",
+      "match_score": 0.7054,
+      "deviation_pct": 51.57,
+      "ssim_score": 0.4353,
+      "progress_pct": 43.5,
+      "edge_diff_pct": 12.95
+    },
+    "Image35": {
+      "matched_view": "finished_Image19",
+      "match_score": 0.4393,
+      "deviation_pct": 57.69,
+      "ssim_score": 0.3839,
+      "progress_pct": 38.4,
+      "edge_diff_pct": 13.97
+    },
+    "Image36": {
+      "matched_view": "finished_Video2 - Snapshot61",
+      "match_score": 0.9244,
+      "deviation_pct": 23.1,
+      "ssim_score": 0.7394,
+      "progress_pct": 73.9,
+      "edge_diff_pct": 5.07
+    },
+    "Image37": {
+      "matched_view": "finished_Video2 - Snapshot61",
+      "match_score": 0.8545,
+      "deviation_pct": 31.36,
+      "ssim_score": 0.7039,
+      "progress_pct": 70.4,
+      "edge_diff_pct": 6.43
+    },
+    "Image38": {
+      "matched_view": "finished_Image1",
+      "match_score": 0.7173,
+      "deviation_pct": 40.88,
+      "ssim_score": 0.5253,
+      "progress_pct": 52.5,
+      "edge_diff_pct": 9.02
+    },
+    "Image39": {
+      "matched_view": "finished_Image9",
+      "match_score": 0.6349,
+      "deviation_pct": 51.84,
+      "ssim_score": 0.4227,
+      "progress_pct": 42.3,
+      "edge_diff_pct": 11.57
+    },
+    "Image40": {
+      "matched_view": "finished_Image1",
+      "match_score": 0.6366,
+      "deviation_pct": 43.46,
+      "ssim_score": 0.4586,
+      "progress_pct": 45.9,
+      "edge_diff_pct": 11.53
+    },
+    "Image41": {
+      "matched_view": "finished_Image10",
+      "match_score": 0.5638,
+      "deviation_pct": 50.42,
+      "ssim_score": 0.4296,
+      "progress_pct": 43.0,
+      "edge_diff_pct": 10.91
+    },
+    "Image42": {
+      "matched_view": "finished_Image1",
+      "match_score": 0.6406,
+      "deviation_pct": 41.5,
+      "ssim_score": 0.4723,
+      "progress_pct": 47.2,
+      "edge_diff_pct": 10.95
+    },
+    "Image43": {
+      "matched_view": "finished_Image22",
+      "match_score": 0.7441,
+      "deviation_pct": 53.99,
+      "ssim_score": 0.4038,
+      "progress_pct": 40.4,
+      "edge_diff_pct": 10.63
+    },
+    "Image44": {
+      "matched_view": "finished_Image9",
+      "match_score": 0.6131,
+      "deviation_pct": 50.32,
+      "ssim_score": 0.4281,
+      "progress_pct": 42.8,
+      "edge_diff_pct": 11.19
+    },
+    "Image45": {
+      "matched_view": "finished_Image19",
+      "match_score": 0.5145,
+      "deviation_pct": 58.57,
+      "ssim_score": 0.4118,
+      "progress_pct": 41.2,
+      "edge_diff_pct": 12.83
+    },
+    "Image46": {
+      "matched_view": "finished_Image25",
+      "match_score": 0.4901,
+      "deviation_pct": 55.73,
+      "ssim_score": 0.435,
+      "progress_pct": 43.5,
+      "edge_diff_pct": 8.68
+    },
+    "Image47": {
+      "matched_view": "finished_Image23",
+      "match_score": 0.7926,
+      "deviation_pct": 50.05,
+      "ssim_score": 0.4874,
+      "progress_pct": 48.7,
+      "edge_diff_pct": 10.86
+    },
+    "Image48": {
+      "matched_view": "finished_Image2",
+      "match_score": 0.6143,
+      "deviation_pct": 41.15,
+      "ssim_score": 0.547,
+      "progress_pct": 54.7,
+      "edge_diff_pct": 8.95
+    },
+    "Image49": {
+      "matched_view": "finished_Image27",
+      "match_score": 0.6165,
+      "deviation_pct": 50.01,
+      "ssim_score": 0.4548,
+      "progress_pct": 45.5,
+      "edge_diff_pct": 10.27
+    },
+    "Image50": {
+      "matched_view": "finished_Image24",
+      "match_score": 0.7628,
+      "deviation_pct": 57.77,
+      "ssim_score": 0.4068,
+      "progress_pct": 40.7,
+      "edge_diff_pct": 10.01
+    },
+    "Image51": {
+      "matched_view": "finished_Image9",
+      "match_score": 0.5861,
+      "deviation_pct": 49.97,
+      "ssim_score": 0.4356,
+      "progress_pct": 43.6,
+      "edge_diff_pct": 10.9
+    },
+    "Image52": {
+      "matched_view": "finished_Image1",
+      "match_score": 0.8219,
+      "deviation_pct": 41.51,
+      "ssim_score": 0.4818,
+      "progress_pct": 48.2,
+      "edge_diff_pct": 10.57
+    },
+    "Image53": {
+      "matched_view": "finished_Image9",
+      "match_score": 0.8122,
+      "deviation_pct": 50.48,
+      "ssim_score": 0.4079,
+      "progress_pct": 40.8,
+      "edge_diff_pct": 11.75
+    },
+    "Image54": {
+      "matched_view": "finished_Image7",
+      "match_score": 0.5396,
+      "deviation_pct": 52.51,
+      "ssim_score": 0.4745,
+      "progress_pct": 47.5,
+      "edge_diff_pct": 11.14
+    },
+    "Image55": {
+      "matched_view": "finished_Image20",
+      "match_score": 0.5532,
+      "deviation_pct": 36.66,
+      "ssim_score": 0.6138,
+      "progress_pct": 61.4,
+      "edge_diff_pct": 7.76
+    },
+    "Image56": {
+      "matched_view": "finished_Image6",
+      "match_score": 0.4434,
+      "deviation_pct": 28.31,
+      "ssim_score": 0.6557,
+      "progress_pct": 65.6,
+      "edge_diff_pct": 5.85
+    },
+    "Image57": {
+      "matched_view": "finished_Image19",
+      "match_score": 0.9182,
+      "deviation_pct": 49.76,
+      "ssim_score": 0.4,
+      "progress_pct": 40.0,
+      "edge_diff_pct": 18.01
+    },
+    "Image58": {
+      "matched_view": "finished_Image19",
+      "match_score": 0.9217,
+      "deviation_pct": 49.63,
+      "ssim_score": 0.4164,
+      "progress_pct": 41.6,
+      "edge_diff_pct": 16.81
+    },
+    "Image59": {
+      "matched_view": "video_Video1_frame5",
+      "match_score": 0.4807,
+      "deviation_pct": 47.94,
+      "ssim_score": 0.5082,
+      "progress_pct": 50.8,
+      "edge_diff_pct": 6.42
+    },
+    "Image60": {
+      "matched_view": "finished_Image20",
+      "match_score": 0.5435,
+      "deviation_pct": 42.93,
+      "ssim_score": 0.5276,
+      "progress_pct": 52.8,
+      "edge_diff_pct": 7.39
+    },
+    "Image62": {
+      "matched_view": "finished_Image23",
+      "match_score": 0.578,
+      "deviation_pct": 51.57,
+      "ssim_score": 0.4523,
+      "progress_pct": 45.2,
+      "edge_diff_pct": 9.9
+    },
+    "Image63": {
+      "matched_view": "finished_Image22",
+      "match_score": 0.7007,
+      "deviation_pct": 55.61,
+      "ssim_score": 0.4062,
+      "progress_pct": 40.6,
+      "edge_diff_pct": 10.61
+    },
+    "Image64": {
+      "matched_view": "finished_Image19",
+      "match_score": 0.5058,
+      "deviation_pct": 54.97,
+      "ssim_score": 0.4237,
+      "progress_pct": 42.4,
+      "edge_diff_pct": 14.53
+    },
+    "Image65": {
+      "matched_view": "finished_Image2",
+      "match_score": 0.6943,
+      "deviation_pct": 35.68,
+      "ssim_score": 0.5455,
+      "progress_pct": 54.5,
+      "edge_diff_pct": 11.22
+    },
+    "Image66": {
+      "matched_view": "finished_Image13",
+      "match_score": 0.9339,
+      "deviation_pct": 52.65,
+      "ssim_score": 0.3797,
+      "progress_pct": 38.0,
+      "edge_diff_pct": 15.78
+    },
+    "Image67": {
+      "matched_view": "finished_Image13",
+      "match_score": 0.9147,
+      "deviation_pct": 51.12,
+      "ssim_score": 0.3803,
+      "progress_pct": 38.0,
+      "edge_diff_pct": 15.79
+    },
+    "Image68": {
+      "matched_view": "finished_Image23",
+      "match_score": 0.9408,
+      "deviation_pct": 47.26,
+      "ssim_score": 0.4474,
+      "progress_pct": 44.7,
+      "edge_diff_pct": 13.55
+    },
+    "Image69": {
+      "matched_view": "finished_Image11",
+      "match_score": 0.9272,
+      "deviation_pct": 48.17,
+      "ssim_score": 0.3987,
+      "progress_pct": 39.9,
+      "edge_diff_pct": 15.48
+    },
+    "Image70": {
+      "matched_view": "finished_Image11",
+      "match_score": 0.7185,
+      "deviation_pct": 51.08,
+      "ssim_score": 0.3941,
+      "progress_pct": 39.4,
+      "edge_diff_pct": 14.47
+    },
+    "Image71": {
+      "matched_view": "finished_Video2 - Snapshot61",
+      "match_score": 0.566,
+      "deviation_pct": 35.98,
+      "ssim_score": 0.659,
+      "progress_pct": 65.9,
+      "edge_diff_pct": 6.32
+    },
+    "Image72": {
+      "matched_view": "finished_Image27",
+      "match_score": 0.9207,
+      "deviation_pct": 32.92,
+      "ssim_score": 0.5548,
+      "progress_pct": 55.5,
+      "edge_diff_pct": 11.44
+    },
+    "Image73": {
+      "matched_view": "finished_Image11",
+      "match_score": 0.9133,
+      "deviation_pct": 51.98,
+      "ssim_score": 0.3874,
+      "progress_pct": 38.7,
+      "edge_diff_pct": 15.0
+    },
+    "Image74": {
+      "matched_view": "finished_Image25",
+      "match_score": 0.9041,
+      "deviation_pct": 44.96,
+      "ssim_score": 0.4949,
+      "progress_pct": 49.5,
+      "edge_diff_pct": 11.46
+    },
+    "Video1 - Snapshot21": {
+      "matched_view": "finished_Image24",
+      "match_score": 0.8086,
+      "deviation_pct": 56.32,
+      "ssim_score": 0.478,
+      "progress_pct": 47.8,
+      "edge_diff_pct": 8.4
+    }
+  }
+}

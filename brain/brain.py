@@ -47,6 +47,7 @@ from modules.module_a import DroneBIMNavigator
 from modules.module_b import Guardian360
 from modules.module_c import ActivityAnalyst
 from utils.uplink import AECIUplink
+from utils.capture import TwinmotionCapture
 
 # ── Logging setup ─────────────────────────────────────────────────────────
 logging.basicConfig(
@@ -118,6 +119,8 @@ class AECIBrain:
         self.module_a = DroneBIMNavigator(
             prototype_path=cfg.PROTOTYPE_IMAGE_PATH,
             deviation_threshold=cfg.DEVIATION_THRESHOLD,
+            proto_db_path=cfg.PROTO_DB_PATH,
+            baselines_path=cfg.BASELINES_PATH,
         )
 
         log.info("Loading Module B — 360° Guardian...")
@@ -136,11 +139,14 @@ class AECIBrain:
         # ── Init video capture ────────────────────────────────────────────
         source = cfg.video_source()
         log.info(f"Opening video source: {source}")
-        self.cap = cv2.VideoCapture(source)
+        self.cap = TwinmotionCapture(str(source))
 
         if not self.cap.isOpened():
             log.error(f"Cannot open video source: {source}")
             log.info("Tips:")
+            log.info("  • Set VIDEO_SOURCE=twinmotion in .env for direct window capture")
+            log.info("  • Set VIDEO_SOURCE=obs in .env for OBS Virtual Camera")
+            log.info("  • Set VIDEO_SOURCE=screen in .env for full screen capture")
             log.info("  • OBS: Click 'Start Virtual Camera' in OBS")
             log.info("  • Camera index: Try VIDEO_SOURCE=1 or VIDEO_SOURCE=2 in .env")
             log.info("  • File: Set VIDEO_SOURCE=path/to/twinmotion_recording.mp4")
@@ -225,8 +231,11 @@ class AECIBrain:
         if self.show_hud:
             self._draw_brain_hud(composite)
 
-        # ── Show preview window ───────────────────────────────────────────
-        cv2.imshow("AECI Brain — Live Feed (Press Q to quit)", composite)
+        # ── Show preview window (skip if no display available) ────────────
+        try:
+            cv2.imshow("AECI Brain — Live Feed (Press Q to quit)", composite)
+        except cv2.error:
+            pass  # Headless mode — no GUI display
 
         # ── Save debug frame ──────────────────────────────────────────────
         if cfg.SAVE_DEBUG_FRAMES and self.frame_count % 30 == 0:

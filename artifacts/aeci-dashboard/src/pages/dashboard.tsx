@@ -32,11 +32,11 @@ import { BrainStatusPanel } from "@/components/brain-status";
 import { LiveFeedViewer } from "@/components/live-feed";
 
 export default function DashboardPage() {
-  const { data: pulse, isLoading: isLoadingPulse } = useGetDashboardPulse({ query: { refetchInterval: 10000 } });
-  const { data: metrics, isLoading: isLoadingMetrics } = useGetDashboardMetrics({ query: { refetchInterval: 10000 } });
-  const { data: alerts, isLoading: isLoadingAlerts } = useListAlerts({ limit: 5, acknowledged: false }, { query: { refetchInterval: 10000 } });
-  const { data: cameras, isLoading: isLoadingCameras } = useListCameras({ query: { refetchInterval: 10000 } });
-  const { data: brainStatus } = useGetLiveStatus({ query: { refetchInterval: 2000 } });
+  const { data: pulse, isLoading: isLoadingPulse } = useGetDashboardPulse({ query: { refetchInterval: 10000 } as any });
+  const { data: metrics, isLoading: isLoadingMetrics } = useGetDashboardMetrics({ query: { refetchInterval: 10000 } as any });
+  const { data: alerts, isLoading: isLoadingAlerts } = useListAlerts({ limit: 5, acknowledged: false }, { query: { refetchInterval: 10000 } as any });
+  const { data: cameras, isLoading: isLoadingCameras } = useListCameras({ query: { refetchInterval: 10000 } as any });
+  const { data: brainStatus } = useGetLiveStatus({ query: { refetchInterval: 2000 } as any });
 
   const acknowledgeAlert = useAcknowledgeAlert();
   const adminReset = useAdminReset();
@@ -209,7 +209,7 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {cameras?.slice(0, 3).map((camera) => (
+                  {(Array.isArray(cameras) ? cameras : []).slice(0, 3).map((camera) => (
                     <div key={camera.id} className="relative aspect-video bg-black rounded-md overflow-hidden border border-border group">
                       <img src={camera.lastFrame || `https://images.unsplash.com/photo-1541888086925-eb3225f5cb3e?w=800&q=80&auto=format&fit=crop`} alt={camera.name} className="object-cover w-full h-full opacity-70 group-hover:opacity-100 transition-opacity" />
                       <div className="absolute top-2 left-2 flex items-center gap-2 bg-background/80 backdrop-blur-sm px-2 py-1 rounded text-xs font-mono">
@@ -242,7 +242,7 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {metrics?.floorProgress?.map((floor) => (
+                  {(Array.isArray(metrics?.floorProgress) ? metrics.floorProgress : []).map((floor) => (
                     <div key={floor.floor} className="space-y-1.5">
                       <div className="flex justify-between text-sm font-medium">
                         <span>Floor {floor.floor}</span>
@@ -291,7 +291,7 @@ export default function DashboardPage() {
                   </div>
                 ) : (
                   <div className="divide-y divide-border/50">
-                    {alerts?.map((alert) => (
+                    {(Array.isArray(alerts) ? alerts : []).map((alert) => (
                       <div key={alert.id} className="p-4 hover:bg-muted/30 transition-colors">
                         <div className="flex justify-between items-start mb-1">
                           <div className="flex items-center gap-2">

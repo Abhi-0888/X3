@@ -17,7 +17,7 @@ export default function AlertsPage() {
     type: typeFilter !== "ALL" ? typeFilter as any : undefined,
     acknowledged: statusFilter === "ALL" ? undefined : statusFilter === "ACKNOWLEDGED",
     limit: 100
-  }, { query: { refetchInterval: 10000 } });
+  }, { query: { refetchInterval: 10000 } as any });
 
   const acknowledgeAlert = useAcknowledgeAlert();
   const { toast } = useToast();
@@ -97,14 +97,14 @@ export default function AlertsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {alerts?.length === 0 ? (
+              {!Array.isArray(alerts) || alerts.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center h-32 text-muted-foreground">
                     No alerts matching criteria
                   </TableCell>
                 </TableRow>
               ) : (
-                alerts?.map((alert) => (
+                alerts.map((alert) => (
                   <TableRow key={alert.id} className={cn(!alert.acknowledged ? "bg-muted/20" : "opacity-70")}>
                     <TableCell>
                       {getIcon(alert.type)}

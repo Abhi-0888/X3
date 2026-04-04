@@ -3,9 +3,11 @@
 
 # Computer Vision & AI
 opencv-python>=4.8.0
+opencv-contrib-python>=4.8.0 # SIFT + extra features for training
 numpy>=1.24.0
 ultralytics>=8.0.0          # YOLOv8/v11
 mediapipe>=0.10.0            # Pose estimation
+scikit-image>=0.21.0         # SSIM structural similarity
 
 # Database & Communication
 pymongo>=4.6.0               # MongoDB (external deployment)

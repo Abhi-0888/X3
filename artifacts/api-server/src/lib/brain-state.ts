@@ -143,5 +143,69 @@ class LatestFrame {
 
 // ── Singleton exports ─────────────────────────────────────────────────────
 
+// ── In-memory alerts store (works without PostgreSQL) ────────────────
+
+interface InMemoryAlert {
+  id: number;
+  type: string;
+  severity: string;
+  title: string;
+  message: string;
+  zone: string;
+  entityId: number | null;
+  acknowledged: boolean;
+  createdAt: string;
+  acknowledgedAt: string | null;
+}
+
+class LiveAlerts {
+  private _alerts: InMemoryAlert[] = [];
+  private _nextId = 1;
+  private readonly MAX_ALERTS = 200;
+
+  add(alert: { type: string; severity: string; title: string; message: string; zone: string }): InMemoryAlert {
+    const entry: InMemoryAlert = {
+      ...alert,
+      entityId: null,
+      id: this._nextId++,
+      acknowledged: false,
+      createdAt: new Date().toISOString(),
+      acknowledgedAt: null,
+    };
+    this._alerts.unshift(entry);
+    if (this._alerts.length > this.MAX_ALERTS) {
+      this._alerts = this._alerts.slice(0, this.MAX_ALERTS);
+    }
+    return entry;
+  }
+
+  list(opts?: { type?: string; acknowledged?: boolean; limit?: number }): InMemoryAlert[] {
+    let result = this._alerts;
+    if (opts?.type) result = result.filter((a) => a.type === opts.type);
+    if (opts?.acknowledged !== undefined) result = result.filter((a) => a.acknowledged === opts.acknowledged);
+    return result.slice(0, opts?.limit ?? 50);
+  }
+
+  acknowledge(id: number): InMemoryAlert | null {
+    const alert = this._alerts.find((a) => a.id === id);
+    if (alert) {
+      alert.acknowledged = true;
+      alert.acknowledgedAt = new Date().toISOString();
+    }
+    return alert ?? null;
+  }
+
+  count(acknowledged?: boolean): number {
+    if (acknowledged === undefined) return this._alerts.length;
+    return this._alerts.filter((a) => a.acknowledged === acknowledged).length;
+  }
+
+  reset() {
+    this._alerts = [];
+    this._nextId = 1;
+  }
+}
+
 export const liveBrainState = new LiveBrainState();
 export const latestFrame = new LatestFrame();
+export const liveAlerts = new LiveAlerts();

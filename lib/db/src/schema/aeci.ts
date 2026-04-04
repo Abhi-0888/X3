@@ -1,201 +1,196 @@
-import {
-  pgTable,
-  serial,
-  text,
-  integer,
-  real,
-  boolean,
-  timestamp,
-  jsonb,
-} from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod/v4";
+/**
+ * MongoDB Schemas for AECI
+ *
+ * All collections use Mongoose schemas with proper TypeScript types.
+ */
+import mongoose from "mongoose";
 
-export const droneScansTable = pgTable("drone_scans", {
-  id: serial("id").primaryKey(),
-  droneId: text("drone_id").notNull(),
-  status: text("status").notNull().default("in_progress"),
-  flightPath: text("flight_path").notNull(),
-  totalFrames: integer("total_frames").notNull().default(0),
-  anomalyCount: integer("anomaly_count").notNull().default(0),
-  progressPct: real("progress_pct").notNull().default(0),
-  scanTime: timestamp("scan_time").defaultNow(),
+// Alert Schema
+const alertSchema = new mongoose.Schema({
+  type: { type: String, required: true },
+  severity: { type: String, required: true },
+  title: { type: String, required: true },
+  message: { type: String, required: true },
+  zone: { type: String, required: true },
+  entityId: { type: Number, default: null },
+  acknowledged: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
+  acknowledgedAt: { type: Date, default: null },
 });
 
-export const insertDroneScanSchema = createInsertSchema(droneScansTable).omit({
-  id: true,
-  scanTime: true,
-});
-export type InsertDroneScan = z.infer<typeof insertDroneScanSchema>;
-export type DroneScan = typeof droneScansTable.$inferSelect;
+export const AlertModel = mongoose.model("Alert", alertSchema);
 
-export const structuralAnomaliesTable = pgTable("structural_anomalies", {
-  id: serial("id").primaryKey(),
-  scanId: integer("scan_id")
-    .notNull()
-    .references(() => droneScansTable.id),
-  elementId: text("element_id").notNull(),
-  elementType: text("element_type").notNull(),
-  deviationPct: real("deviation_pct").notNull(),
-  deviationDescription: text("deviation_description").notNull(),
-  zone: text("zone").notNull(),
-  severity: text("severity").notNull(),
-  resolved: boolean("resolved").notNull().default(false),
-  detectedAt: timestamp("detected_at").defaultNow(),
-  resolvedAt: timestamp("resolved_at"),
-  worldX: real("world_x").notNull().default(0),
-  worldY: real("world_y").notNull().default(0),
-  worldZ: real("world_z").notNull().default(0),
+// Worker Schema
+const workerSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  role: { type: String, required: true },
+  zone: { type: String, required: true },
+  status: { type: String, default: "active" },
+  efficiencyScore: { type: Number, default: 75 },
+  movementScore: { type: Number, default: 60 },
+  idleMinutes: { type: Number, default: 0 },
+  ppeStatus: { type: String, default: "compliant" },
+  currentCamera: { type: String, default: "cam_front" },
+  joinedAt: { type: Date, default: Date.now },
 });
 
-export const insertAnomalySchema = createInsertSchema(
-  structuralAnomaliesTable
-).omit({ id: true, detectedAt: true });
-export type InsertAnomaly = z.infer<typeof insertAnomalySchema>;
-export type StructuralAnomaly = typeof structuralAnomaliesTable.$inferSelect;
+export const WorkerModel = mongoose.model("Worker", workerSchema);
 
-export const workersTable = pgTable("workers", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  role: text("role").notNull(),
-  zone: text("zone").notNull(),
-  status: text("status").notNull().default("active"),
-  efficiencyScore: real("efficiency_score").notNull().default(75),
-  movementScore: real("movement_score").notNull().default(60),
-  idleMinutes: integer("idle_minutes").notNull().default(0),
-  ppeStatus: text("ppe_status").notNull().default("compliant"),
-  currentCamera: text("current_camera").notNull().default("cam_front"),
-  joinedAt: timestamp("joined_at").defaultNow(),
+// PPE Violation Schema
+const ppeViolationSchema = new mongoose.Schema({
+  workerId: { type: Number, required: true },
+  cameraId: { type: String, required: true },
+  cameraName: { type: String, required: true },
+  missingItems: { type: [String], default: [] },
+  severity: { type: String, required: true },
+  detectedAt: { type: Date, default: Date.now },
+  resolved: { type: Boolean, default: false },
 });
 
-export const insertWorkerSchema = createInsertSchema(workersTable).omit({
-  id: true,
-  joinedAt: true,
-});
-export type InsertWorker = z.infer<typeof insertWorkerSchema>;
-export type Worker = typeof workersTable.$inferSelect;
+export const PPEViolationModel = mongoose.model("PPEViolation", ppeViolationSchema);
 
-export const ppeViolationsTable = pgTable("ppe_violations", {
-  id: serial("id").primaryKey(),
-  workerId: integer("worker_id")
-    .notNull()
-    .references(() => workersTable.id),
-  cameraId: text("camera_id").notNull(),
-  cameraName: text("camera_name").notNull(),
-  missingItems: jsonb("missing_items").notNull().default([]),
-  severity: text("severity").notNull(),
-  detectedAt: timestamp("detected_at").defaultNow(),
-  resolved: boolean("resolved").notNull().default(false),
+// Zone Breach Schema
+const zoneBreachSchema = new mongoose.Schema({
+  workerId: { type: Number, required: true },
+  zoneId: { type: Number, required: true },
+  zoneName: { type: String, required: true },
+  cameraId: { type: String, required: true },
+  entryTime: { type: Date, default: Date.now },
+  exitTime: { type: Date, default: null },
+  duration: { type: Number, default: null },
 });
 
-export const insertPPEViolationSchema = createInsertSchema(
-  ppeViolationsTable
-).omit({ id: true, detectedAt: true });
-export type InsertPPEViolation = z.infer<typeof insertPPEViolationSchema>;
-export type PPEViolation = typeof ppeViolationsTable.$inferSelect;
+export const ZoneBreachModel = mongoose.model("ZoneBreach", zoneBreachSchema);
 
-export const zoneBreachesTable = pgTable("zone_breaches", {
-  id: serial("id").primaryKey(),
-  workerId: integer("worker_id")
-    .notNull()
-    .references(() => workersTable.id),
-  zoneId: integer("zone_id").notNull(),
-  zoneName: text("zone_name").notNull(),
-  cameraId: text("camera_id").notNull(),
-  entryTime: timestamp("entry_time").defaultNow(),
-  exitTime: timestamp("exit_time"),
-  duration: integer("duration"),
+// Structural Anomaly Schema
+const structuralAnomalySchema = new mongoose.Schema({
+  scanId: { type: Number, required: true },
+  elementId: { type: String, required: true },
+  elementType: { type: String, required: true },
+  deviationPct: { type: Number, required: true },
+  deviationDescription: { type: String, required: true },
+  zone: { type: String, required: true },
+  severity: { type: String, required: true },
+  resolved: { type: Boolean, default: false },
+  detectedAt: { type: Date, default: Date.now },
+  resolvedAt: { type: Date, default: null },
+  worldX: { type: Number, default: 0 },
+  worldY: { type: Number, default: 0 },
+  worldZ: { type: Number, default: 0 },
 });
 
-export const insertZoneBreachSchema = createInsertSchema(
-  zoneBreachesTable
-).omit({ id: true });
-export type InsertZoneBreach = z.infer<typeof insertZoneBreachSchema>;
-export type ZoneBreach = typeof zoneBreachesTable.$inferSelect;
+export const StructuralAnomalyModel = mongoose.model("StructuralAnomaly", structuralAnomalySchema);
 
-export const dangerZonesTable = pgTable("danger_zones", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  type: text("type").notNull(),
-  riskLevel: text("risk_level").notNull(),
-  description: text("description").notNull(),
-  active: boolean("active").notNull().default(true),
+// Drone Scan Schema
+const droneScanSchema = new mongoose.Schema({
+  droneId: { type: String, required: true },
+  status: { type: String, default: "in_progress" },
+  flightPath: { type: String, required: true },
+  totalFrames: { type: Number, default: 0 },
+  anomalyCount: { type: Number, default: 0 },
+  progressPct: { type: Number, default: 0 },
+  scanTime: { type: Date, default: Date.now },
 });
 
-export const camerasTable = pgTable("cameras", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  angle: text("angle").notNull(),
-  status: text("status").notNull().default("active"),
-  location: text("location").notNull(),
-  workersInFrame: integer("workers_in_frame").notNull().default(0),
-  lastFrame: timestamp("last_frame").defaultNow(),
+export const DroneScanModel = mongoose.model("DroneScan", droneScanSchema);
+
+// Idle Alert Schema
+const idleAlertSchema = new mongoose.Schema({
+  workerId: { type: Number, required: true },
+  idleDurationSeconds: { type: Number, required: true },
+  zone: { type: String, required: true },
+  detectedAt: { type: Date, default: Date.now },
+  acknowledged: { type: Boolean, default: false },
 });
 
-export const idleAlertsTable = pgTable("idle_alerts", {
-  id: serial("id").primaryKey(),
-  workerId: integer("worker_id")
-    .notNull()
-    .references(() => workersTable.id),
-  idleDurationSeconds: integer("idle_duration_seconds").notNull(),
-  zone: text("zone").notNull(),
-  detectedAt: timestamp("detected_at").defaultNow(),
-  acknowledged: boolean("acknowledged").notNull().default(false),
+export const IdleAlertModel = mongoose.model("IdleAlert", idleAlertSchema);
+
+// Danger Zone Schema
+const dangerZoneSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  type: { type: String, required: true },
+  riskLevel: { type: String, required: true },
+  description: { type: String, required: true },
+  active: { type: Boolean, default: true },
 });
 
-export const alertsTable = pgTable("alerts", {
-  id: serial("id").primaryKey(),
-  type: text("type").notNull(),
-  severity: text("severity").notNull(),
-  title: text("title").notNull(),
-  message: text("message").notNull(),
-  zone: text("zone").notNull(),
-  entityId: integer("entity_id"),
-  acknowledged: boolean("acknowledged").notNull().default(false),
-  createdAt: timestamp("created_at").defaultNow(),
-  acknowledgedAt: timestamp("acknowledged_at"),
+export const DangerZoneModel = mongoose.model("DangerZone", dangerZoneSchema);
+
+// Camera Schema
+const cameraSchema = new mongoose.Schema({
+  _id: { type: String, required: true },
+  name: { type: String, required: true },
+  angle: { type: String, required: true },
+  status: { type: String, default: "active" },
+  location: { type: String, required: true },
+  workersInFrame: { type: Number, default: 0 },
+  lastFrame: { type: Date, default: Date.now },
 });
 
-export const insertAlertSchema = createInsertSchema(alertsTable).omit({
-  id: true,
-  createdAt: true,
-});
-export type InsertAlert = z.infer<typeof insertAlertSchema>;
-export type Alert = typeof alertsTable.$inferSelect;
+export const CameraModel = mongoose.model("Camera", cameraSchema);
 
-export const auditReportsTable = pgTable("audit_reports", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  generatedAt: timestamp("generated_at").defaultNow(),
-  period: text("period").notNull(),
-  structuralSummary: text("structural_summary").notNull(),
-  safetySummary: text("safety_summary").notNull(),
-  efficiencySummary: text("efficiency_summary").notNull(),
-  costImpactEstimate: real("cost_impact_estimate").notNull(),
-  riskLevel: text("risk_level").notNull(),
-  recommendations: jsonb("recommendations").notNull().default([]),
-  fullReport: text("full_report").notNull(),
+// Audit Report Schema
+const auditReportSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  generatedAt: { type: Date, default: Date.now },
+  period: { type: String, required: true },
+  structuralSummary: { type: String, required: true },
+  safetySummary: { type: String, required: true },
+  efficiencySummary: { type: String, required: true },
+  costImpactEstimate: { type: Number, required: true },
+  riskLevel: { type: String, required: true },
+  recommendations: { type: [String], default: [] },
+  fullReport: { type: String, required: true },
 });
 
-export const insertReportSchema = createInsertSchema(auditReportsTable).omit({
-  id: true,
-  generatedAt: true,
-});
-export type InsertReport = z.infer<typeof insertReportSchema>;
-export type AuditReport = typeof auditReportsTable.$inferSelect;
+export const AuditReportModel = mongoose.model("AuditReport", auditReportSchema);
 
-export const dailyProgressTable = pgTable("daily_progress", {
-  id: serial("id").primaryKey(),
-  date: text("date").notNull(),
-  progressPct: real("progress_pct").notNull(),
-  deviations: integer("deviations").notNull().default(0),
+// Daily Progress Schema
+const dailyProgressSchema = new mongoose.Schema({
+  date: { type: String, required: true },
+  progressPct: { type: Number, required: true },
+  deviations: { type: Number, default: 0 },
 });
 
-export const activityTimelineTable = pgTable("activity_timeline", {
-  id: serial("id").primaryKey(),
-  hour: text("hour").notNull(),
-  activeWorkers: integer("active_workers").notNull(),
-  idleWorkers: integer("idle_workers").notNull(),
-  avgMovement: real("avg_movement").notNull(),
-  tasksCompleted: integer("tasks_completed").notNull(),
+export const DailyProgressModel = mongoose.model("DailyProgress", dailyProgressSchema);
+
+// Activity Timeline Schema
+const activityTimelineSchema = new mongoose.Schema({
+  hour: { type: String, required: true },
+  activeWorkers: { type: Number, required: true },
+  idleWorkers: { type: Number, required: true },
+  avgMovement: { type: Number, required: true },
+  tasksCompleted: { type: Number, required: true },
 });
+
+export const ActivityTimelineModel = mongoose.model("ActivityTimeline", activityTimelineSchema);
+
+// Export all models
+export const models = {
+  Alert: AlertModel,
+  Worker: WorkerModel,
+  PPEViolation: PPEViolationModel,
+  ZoneBreach: ZoneBreachModel,
+  StructuralAnomaly: StructuralAnomalyModel,
+  DroneScan: DroneScanModel,
+  IdleAlert: IdleAlertModel,
+  DangerZone: DangerZoneModel,
+  Camera: CameraModel,
+  AuditReport: AuditReportModel,
+  DailyProgress: DailyProgressModel,
+  ActivityTimeline: ActivityTimelineModel,
+};
+
+// Legacy exports for compatibility
+export const alertsTable = AlertModel;
+export const workersTable = WorkerModel;
+export const ppeViolationsTable = PPEViolationModel;
+export const zoneBreachesTable = ZoneBreachModel;
+export const structuralAnomaliesTable = StructuralAnomalyModel;
+export const droneScansTable = DroneScanModel;
+export const idleAlertsTable = IdleAlertModel;
+export const dangerZonesTable = DangerZoneModel;
+export const camerasTable = CameraModel;
+export const auditReportsTable = AuditReportModel;
+export const dailyProgressTable = DailyProgressModel;
+export const activityTimelineTable = ActivityTimelineModel;

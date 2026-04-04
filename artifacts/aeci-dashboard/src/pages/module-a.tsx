@@ -16,9 +16,9 @@ import { Area, AreaChart, Bar, BarChart, CartesianGrid, Legend, ResponsiveContai
 import { useToast } from "@/hooks/use-toast";
 
 export default function ModuleAPage() {
-  const { data: scans, isLoading: isLoadingScans } = useListDroneScans({}, { query: { refetchInterval: 10000 } });
-  const { data: anomalies, isLoading: isLoadingAnomalies } = useListAnomalies({ resolved: false }, { query: { refetchInterval: 10000 } });
-  const { data: progress, isLoading: isLoadingProgress } = useGetConstructionProgress({ query: { refetchInterval: 10000 } });
+  const { data: scans, isLoading: isLoadingScans } = useListDroneScans({}, { query: { refetchInterval: 10000 } as any });
+  const { data: anomalies, isLoading: isLoadingAnomalies } = useListAnomalies({ resolved: false }, { query: { refetchInterval: 10000 } as any });
+  const { data: progress, isLoading: isLoadingProgress } = useGetConstructionProgress({ query: { refetchInterval: 10000 } as any });
   
   const createScan = useCreateDroneScan();
   const resolveAnomaly = useResolveAnomaly();
@@ -87,7 +87,7 @@ export default function ModuleAPage() {
                 </div>
                 
                 {/* Mock Anomaly Hotspots */}
-                {anomalies?.slice(0, 3).map((anomaly, i) => (
+                {(Array.isArray(anomalies) ? anomalies : []).slice(0, 3).map((anomaly, i) => (
                   <div 
                     key={anomaly.id} 
                     className="absolute group"
@@ -131,12 +131,12 @@ export default function ModuleAPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {anomalies?.length === 0 ? (
+                  {!Array.isArray(anomalies) || anomalies.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={5} className="text-center text-muted-foreground h-24">No unresolved anomalies</TableCell>
                     </TableRow>
                   ) : (
-                    anomalies?.map(anomaly => (
+                    anomalies.map(anomaly => (
                       <TableRow key={anomaly.id}>
                         <TableCell className="font-mono font-medium">{anomaly.elementId}</TableCell>
                         <TableCell>{anomaly.zone}</TableCell>
@@ -186,7 +186,7 @@ export default function ModuleAPage() {
 
               <div className="space-y-4">
                 <h4 className="text-sm font-medium">Element Breakdown</h4>
-                {progress?.elementBreakdown?.map(el => (
+                {(Array.isArray(progress?.elementBreakdown) ? progress.elementBreakdown : []).map(el => (
                   <div key={el.type} className="space-y-1">
                     <div className="flex justify-between text-xs">
                       <span className="capitalize">{el.type}</span>
@@ -210,7 +210,7 @@ export default function ModuleAPage() {
             </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-border">
-                {scans?.slice(0,5).map(scan => (
+                {(Array.isArray(scans) ? scans : []).slice(0,5).map(scan => (
                   <div key={scan.id} className="p-4 flex items-center justify-between">
                     <div>
                       <div className="font-mono text-sm font-bold">{scan.droneId}</div>

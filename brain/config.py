@@ -28,6 +28,11 @@ class Config:
     YOLO_MODEL_PATH: str = os.getenv("YOLO_MODEL_PATH", "assets/custom_yolo.pt")
     PROTOTYPE_IMAGE_PATH: str = os.getenv("PROTOTYPE_IMAGE_PATH", "assets/prototype_house.png")
 
+    # ── Trained model paths (from train.py) ─────
+    PROTO_DB_PATH: str = os.getenv("PROTO_DB_PATH", "assets/trained/prototype_database.pkl")
+    BASELINES_PATH: str = os.getenv("BASELINES_PATH", "assets/trained/unfinished_baselines.json")
+    PPE_CONFIG_PATH: str = os.getenv("PPE_CONFIG_PATH", "assets/trained/ppe_model_config.json")
+
     # ── Module toggles ────────────────────────────
     MODULE_A_ENABLED: bool = os.getenv("MODULE_A_ENABLED", "true").lower() == "true"
     MODULE_B_ENABLED: bool = os.getenv("MODULE_B_ENABLED", "true").lower() == "true"

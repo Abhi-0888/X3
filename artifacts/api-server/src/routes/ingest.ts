@@ -5,10 +5,8 @@
  * every second with live metrics, processed frames, and alerts.
  */
 import { Router, type IRouter } from "express";
-import { db } from "@workspace/db";
-import { alertsTable as alerts } from "@workspace/db/schema";
 import { logger } from "../lib/logger";
-import { liveBrainState, latestFrame } from "../lib/brain-state";
+import { liveBrainState, latestFrame, liveAlerts } from "../lib/brain-state";
 
 const router: IRouter = Router();
 
@@ -74,7 +72,7 @@ router.post("/ingest/frame", (req, res) => {
  * Brain sends a new alert (PPE violation, deviation, zone breach, idle worker).
  * Alerts are inserted into the PostgreSQL alerts table so they persist.
  */
-router.post("/ingest/alert", async (req, res) => {
+router.post("/ingest/alert", (req, res) => {
   const body = req.body as Record<string, unknown>;
 
   const alertType = typeof body.type === "string" ? body.type : "DEVIATION";
@@ -83,26 +81,10 @@ router.post("/ingest/alert", async (req, res) => {
   const message = typeof body.message === "string" ? body.message : "";
   const zone = typeof body.zone === "string" ? body.zone : "Unknown";
 
-  try {
-    const [inserted] = await db
-      .insert(alerts)
-      .values({
-        type: alertType as "DEVIATION" | "PPE_VIOLATION" | "ZONE_BREACH" | "IDLE_WORKER" | "PROGRESS",
-        severity: severity as "critical" | "high" | "medium" | "low" | "info",
-        title,
-        message,
-        zone,
-        acknowledged: false,
-      })
-      .returning({ id: alerts.id });
+  const inserted = liveAlerts.add({ type: alertType, severity, title, message, zone });
+  logger.info({ alertType, severity, title }, "Brain alert ingested (in-memory)");
 
-    logger.info({ alertType, severity, title }, "Brain alert ingested");
-
-    res.status(201).json({ ok: true, id: inserted?.id ?? 0 });
-  } catch (err) {
-    logger.error({ err }, "Failed to ingest alert");
-    res.status(500).json({ ok: false, error: "Failed to store alert" });
-  }
+  res.status(201).json({ ok: true, id: inserted.id });
 });
 
 export default router;
