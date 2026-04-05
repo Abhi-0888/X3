@@ -5,12 +5,6 @@
  */
 import mongoose from "mongoose";
 
-if (!process.env.DATABASE_URL) {
-  throw new Error(
-    "DATABASE_URL must be set. Example: mongodb://localhost:27017/aeci",
-  );
-}
-
 // Connection options
 const options: mongoose.ConnectOptions = {
   maxPoolSize: 10,
@@ -18,14 +12,23 @@ const options: mongoose.ConnectOptions = {
   socketTimeoutMS: 45000,
 };
 
-// Connect to MongoDB
-export async function connectDB(): Promise<typeof mongoose> {
+// Connect to MongoDB (optional - falls back to in-memory)
+export async function connectDB(): Promise<typeof mongoose | null> {
+  if (!process.env.DATABASE_URL) {
+    console.log("[DB] No DATABASE_URL, using in-memory mode");
+    return null;
+  }
   if (mongoose.connection.readyState >= 1) {
     return mongoose;
   }
-  await mongoose.connect(process.env.DATABASE_URL!, options);
-  console.log("[DB] MongoDB connected:", mongoose.connection.name);
-  return mongoose;
+  try {
+    await mongoose.connect(process.env.DATABASE_URL!, options);
+    console.log("[DB] MongoDB connected:", mongoose.connection.name);
+    return mongoose;
+  } catch (err) {
+    console.log("[DB] MongoDB connection failed, using in-memory mode");
+    return null;
+  }
 }
 
 // Disconnect helper

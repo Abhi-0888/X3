@@ -7,7 +7,7 @@
  * When the brain is offline, shows a "Waiting for connection..." placeholder.
  */
 import { useState, useEffect, useRef } from "react";
-import { useGetLiveFrame, useGetLiveStatus } from "@workspace/api-client-react";
+import { useGetLiveFrame, useGetLiveStatus } from "../api-client";
 import { cn } from "@/lib/utils";
 import { Camera, Maximize2, Minimize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";

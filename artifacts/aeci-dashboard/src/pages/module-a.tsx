@@ -5,7 +5,7 @@ import {
   useListAnomalies, 
   useResolveAnomaly,
   useGetConstructionProgress 
-} from "@workspace/api-client-react";
+} from "../api-client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -38,18 +38,13 @@ export default function ModuleAPage() {
     );
   };
 
-  const handleResolve = (id: number) => {
-    resolveAnomaly.mutate(
-      { anomalyId: id },
-      {
-        onSuccess: () => {
-          toast({
-            title: "Anomaly Resolved",
-            description: "The structural anomaly has been marked as resolved.",
-          });
-        }
-      }
-    );
+  const handleResolve = (id: string) => {
+    resolveAnomaly.mutateAsync(id).then(() => {
+      toast({
+        title: "Anomaly Resolved",
+        description: "The structural anomaly has been marked as resolved.",
+      });
+    });
   };
 
   return (

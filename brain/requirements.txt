@@ -24,3 +24,5 @@ anthropic>=0.20.0            # Claude API for report generation
 python-dateutil>=2.8.0
 colorlog>=6.7.0
 tqdm>=4.65.0
+pywin32>=306
+mss>=9.0.1

@@ -6,7 +6,7 @@
  */
 import { Router, type IRouter } from "express";
 import { logger } from "../lib/logger";
-import { liveBrainState, latestFrame, liveAlerts } from "../lib/brain-state";
+import { liveBrainState, latestFrame, liveAlerts, workerTracker, droneBIMStore } from "../lib/brain-state";
 
 const router: IRouter = Router();
 
@@ -38,10 +38,39 @@ router.post("/ingest/heartbeat", (req, res) => {
     brainVersion: typeof body.brainVersion === "string" ? body.brainVersion : typeof body.brain_version === "string" ? body.brain_version : null,
   });
 
+  // Update worker data if provided (from Module C)
+  if (body.workers && Array.isArray(body.workers)) {
+    for (const worker of body.workers) {
+      if (worker.track_id !== undefined) {
+        workerTracker.update({
+          track_id: worker.track_id,
+          worker_name: worker.worker_name || `Worker-${String(worker.track_id).padStart(3, '0')}`,
+          efficiency_score: worker.efficiency_score || 0,
+          movement_score: worker.movement_score || 0,
+          is_idle: worker.is_idle || false,
+          idle_seconds: worker.idle_seconds || 0,
+          total_work_time: worker.total_work_time || 0,
+        });
+      }
+    }
+  }
+
+  // Update active/idle worker counts from tracker and store workers in brain state
+  const activeCount = workerTracker.getActiveCount();
+  const idleCount = workerTracker.getIdleCount();
+  const workerList = workerTracker.list();
+  if (activeCount > 0 || idleCount > 0 || workerList.length > 0) {
+    liveBrainState.update({
+      activeWorkers: activeCount,
+      idleWorkers: idleCount,
+      workers: workerList,
+    });
+  }
+
   // Notify any SSE clients listening on /live/stream
   liveBrainState.notifySSE();
 
-  res.json({ ok: true });
+  res.json({ ok: true, workers: workerTracker.list().length });
 });
 
 /**
@@ -83,6 +112,29 @@ router.post("/ingest/alert", (req, res) => {
 
   const inserted = liveAlerts.add({ type: alertType, severity, title, message, zone });
   logger.info({ alertType, severity, title }, "Brain alert ingested (in-memory)");
+
+  // If this is a structural deviation alert from Module A, also add to DroneBIM store
+  if (alertType === "DEVIATION" && body.module === "A") {
+    // Extract element info from the alert if available
+    const elementId = body.elementId as string || title.match(/([A-Z]+-[A-Z0-9]+)/)?.[1] || "UNKNOWN";
+    const elementType = body.elementType as string || "unknown";
+    const deviationPct = body.deviationPct as number || 0;
+    const deviationDesc = message;
+    
+    droneBIMStore.addAnomaly({
+      elementId,
+      elementType,
+      zone: zone || "Site",
+      deviationPct,
+      deviationDescription: deviationDesc,
+      severity,
+      resolved: false,
+      worldX: (body.worldX as number) || 0,
+      worldY: (body.worldY as number) || 0,
+      worldZ: (body.worldZ as number) || 0,
+    });
+    logger.info({ elementId, deviationPct }, "Module A anomaly added to DroneBIM store");
+  }
 
   res.status(201).json({ ok: true, id: inserted.id });
 });

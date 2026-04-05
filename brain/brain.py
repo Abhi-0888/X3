@@ -124,8 +124,14 @@ class AECIBrain:
         )
 
         log.info("Loading Module B — 360° Guardian...")
+# Load trained PPE helmet detector if available
+        yolo_model = cfg.YOLO_MODEL_PATH
+        if Path("assets/trained/ppe_helmet_detector.pt").exists():
+            yolo_model = "assets/trained/ppe_helmet_detector.pt"
+            log.info(f"Using trained helmet detector: {yolo_model}")
+        
         self.module_b = Guardian360(
-            yolo_model_path=cfg.YOLO_MODEL_PATH,
+            yolo_model_path=yolo_model,
             danger_zones=cfg.DANGER_ZONES,
             confidence_threshold=cfg.YOLO_CONFIDENCE,
         )
@@ -225,6 +231,8 @@ class AECIBrain:
             composite = result_c["annotated_frame"]
             self.state["team_efficiency"] = result_c["team_score"]
             self.state["idle_workers"] = len(result_c["idle_workers"])
+            # Store workers for heartbeat
+            self.state["workers"] = result_c.get("workers", [])
             all_alerts.extend(result_c["alerts"])
 
         # ── Brain status overlay ──────────────────────────────────────────
@@ -376,7 +384,8 @@ class AECIBrain:
     # ── Banner ────────────────────────────────────────────────────────────
 
     def _print_banner(self):
-        print("""
+        try:
+            print("""
 ╔══════════════════════════════════════════════════════╗
 ║       ASTRA-EYE CONSTRUCTION INTELLIGENCE            ║
 ║              AI Brain v1.0                           ║
@@ -385,7 +394,12 @@ class AECIBrain:
 ║  Module B — 360° Guardian (YOLOv8 PPE)               ║
 ║  Module C — Activity Analyst (MediaPipe Pose)        ║
 ╚══════════════════════════════════════════════════════╝
-        """)
+            """)
+        except UnicodeEncodeError:
+            print("AECI AI Brain v1.0")
+            print("Module A — Drone-BIM Navigator")
+            print("Module B — 360° Guardian (YOLOv8 PPE)")
+            print("Module C — Activity Analyst (MediaPipe Pose)")
         print(f"  Mode:      {cfg.MODE}")
         print(f"  API URL:   {cfg.API_URL}")
         print(f"  Camera:    {cfg.video_source()}")

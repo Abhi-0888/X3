@@ -4,39 +4,56 @@ import {
   StructuralAnomalyModel,
   DailyProgressModel,
 } from "@workspace/db/schema";
+import { droneBIMStore, liveBrainState } from "../lib/brain-state";
 
 const router = Router();
+
+// Helper to check if DB is available
+async function isDBAvailable(): Promise<boolean> {
+  try {
+    await DroneScanModel.findOne();
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 router.get("/module-a/scans", async (req, res) => {
   try {
     const limit = Number(req.query.limit ?? 20);
-    const offset = Number(req.query.offset ?? 0);
+    const useDB = await isDBAvailable();
+    
+    if (useDB) {
+      const scans = await DroneScanModel.find()
+        .sort({ scanTime: -1 })
+        .limit(limit);
 
-    const scans = await DroneScanModel.find()
-      .sort({ scanTime: -1 })
-      .skip(offset)
-      .limit(limit);
-
-    const scansWithAnomalies = await Promise.all(
-      scans.map(async (scan) => {
-        const anomalies = await StructuralAnomalyModel.find({ scanId: scan.id });
-        return {
-          ...scan.toObject(),
-          scanTime: scan.scanTime?.toISOString(),
-          anomalies: anomalies.map((a) => ({
-            ...a.toObject(),
-            detectedAt: a.detectedAt?.toISOString(),
-            resolvedAt: a.resolvedAt?.toISOString() ?? null,
-            worldCoords: { x: a.worldX, y: a.worldY, z: a.worldZ },
-          })),
-        };
-      })
-    );
-
-    res.json(scansWithAnomalies);
+      const scansWithAnomalies = await Promise.all(
+        scans.map(async (scan) => {
+          const anomalies = await StructuralAnomalyModel.find({ scanId: scan.id });
+          return {
+            ...scan.toObject(),
+            scanTime: scan.scanTime?.toISOString(),
+            anomalies: anomalies.map((a) => ({
+              ...a.toObject(),
+              detectedAt: a.detectedAt?.toISOString(),
+              resolvedAt: a.resolvedAt?.toISOString() ?? null,
+              worldCoords: { x: a.worldX, y: a.worldY, z: a.worldZ },
+            })),
+          };
+        })
+      );
+      res.json(scansWithAnomalies);
+    } else {
+      // Use in-memory store
+      const scans = droneBIMStore.getScans(limit);
+      res.json(scans);
+    }
   } catch (err) {
     req.log.error({ err }, "Error listing drone scans");
-    res.status(500).json({ error: "Internal server error" });
+    // Fallback to in-memory
+    const scans = droneBIMStore.getScans(Number(req.query.limit ?? 20));
+    res.json(scans);
   }
 });
 
@@ -125,38 +142,71 @@ router.get("/module-a/scans/:scanId", async (req, res) => {
 router.get("/module-a/anomalies", async (req, res) => {
   try {
     const { severity, resolved } = req.query;
-    const query: Record<string, unknown> = {};
-    if (severity) query.severity = severity;
-    if (resolved !== undefined) query.resolved = resolved === "true";
+    const useDB = await isDBAvailable();
+    
+    if (useDB) {
+      const query: Record<string, unknown> = {};
+      if (severity) query.severity = severity;
+      if (resolved !== undefined) query.resolved = resolved === "true";
 
-    const anomalies = await StructuralAnomalyModel.find(query).sort({ detectedAt: -1 });
-    res.json(anomalies.map((a) => ({
-      ...a.toObject(),
-      detectedAt: a.detectedAt?.toISOString(),
-      resolvedAt: a.resolvedAt?.toISOString() ?? null,
-      worldCoords: { x: a.worldX, y: a.worldY, z: a.worldZ },
-    })));
+      const anomalies = await StructuralAnomalyModel.find(query).sort({ detectedAt: -1 });
+      res.json(anomalies.map((a) => ({
+        ...a.toObject(),
+        detectedAt: a.detectedAt?.toISOString(),
+        resolvedAt: a.resolvedAt?.toISOString() ?? null,
+        worldCoords: { x: a.worldX, y: a.worldY, z: a.worldZ },
+      })));
+    } else {
+      // In-memory fallback
+      const anomalies = droneBIMStore.getAnomalies(resolved === "true");
+      // Filter by severity if provided
+      let filtered = anomalies;
+      if (severity) {
+        filtered = anomalies.filter(a => a.severity === severity);
+      }
+      res.json(filtered.map(a => ({
+        ...a,
+        worldCoords: { x: a.worldX, y: a.worldY, z: a.worldZ },
+      })));
+    }
   } catch (err) {
     req.log.error({ err }, "Error listing anomalies");
-    res.status(500).json({ error: "Internal server error" });
+    // Fallback to in-memory
+    const anomalies = droneBIMStore.getAnomalies();
+    res.json(anomalies.map(a => ({
+      ...a,
+      worldCoords: { x: a.worldX, y: a.worldY, z: a.worldZ },
+    })));
   }
 });
 
 router.post("/module-a/anomalies/:anomalyId/resolve", async (req, res) => {
   try {
     const anomalyId = req.params.anomalyId;
-    const updated = await StructuralAnomalyModel.findByIdAndUpdate(
-      anomalyId,
-      { resolved: true, resolvedAt: new Date() },
-      { new: true }
-    );
-    if (!updated) return res.status(404).json({ error: "Anomaly not found" });
-    res.json({
-      ...updated.toObject(),
-      detectedAt: updated.detectedAt?.toISOString(),
-      resolvedAt: updated.resolvedAt?.toISOString() ?? null,
-      worldCoords: { x: updated.worldX, y: updated.worldY, z: updated.worldZ },
-    });
+    const useDB = await isDBAvailable();
+    
+    if (useDB) {
+      const updated = await StructuralAnomalyModel.findByIdAndUpdate(
+        anomalyId,
+        { resolved: true, resolvedAt: new Date() },
+        { new: true }
+      );
+      if (!updated) return res.status(404).json({ error: "Anomaly not found" });
+      res.json({
+        ...updated.toObject(),
+        detectedAt: updated.detectedAt?.toISOString(),
+        resolvedAt: updated.resolvedAt?.toISOString() ?? null,
+        worldCoords: { x: updated.worldX, y: updated.worldY, z: updated.worldZ },
+      });
+    } else {
+      // In-memory fallback
+      const updated = droneBIMStore.resolveAnomaly(anomalyId);
+      if (!updated) return res.status(404).json({ error: "Anomaly not found" });
+      res.json({
+        ...updated,
+        worldCoords: { x: updated.worldX, y: updated.worldY, z: updated.worldZ },
+      });
+    }
   } catch (err) {
     req.log.error({ err }, "Error resolving anomaly");
     res.status(500).json({ error: "Internal server error" });
@@ -165,27 +215,56 @@ router.post("/module-a/anomalies/:anomalyId/resolve", async (req, res) => {
 
 router.get("/module-a/progress", async (req, res) => {
   try {
-    const dailyProgress = await DailyProgressModel.find().sort({ date: 1 });
-    const elementBreakdown = [
-      { type: "Columns", builtCount: 48, totalCount: 60, pct: 80 },
-      { type: "Walls", builtCount: 134, totalCount: 200, pct: 67 },
-      { type: "Beams", builtCount: 82, totalCount: 120, pct: 68.3 },
-      { type: "Slabs", builtCount: 12, totalCount: 20, pct: 60 },
-      { type: "Foundation", builtCount: 1, totalCount: 1, pct: 100 },
-    ];
-    const latestPct = dailyProgress[dailyProgress.length - 1]?.progressPct ?? 48.5;
-    res.json({
-      overallPct: latestPct,
-      dailyProgress: dailyProgress.map((d) => ({
-        date: d.date,
-        progressPct: d.progressPct,
-        deviations: d.deviations,
-      })),
-      elementBreakdown,
-    });
+    const useDB = await isDBAvailable();
+    const brain = liveBrainState.get();
+    
+    if (useDB) {
+      const dailyProgress = await DailyProgressModel.find().sort({ date: 1 });
+      const elementBreakdown = [
+        { type: "Columns", builtCount: 48, totalCount: 60, pct: 80 },
+        { type: "Walls", builtCount: 134, totalCount: 200, pct: 67 },
+        { type: "Beams", builtCount: 82, totalCount: 120, pct: 68.3 },
+        { type: "Slabs", builtCount: 12, totalCount: 20, pct: 60 },
+        { type: "Foundation", builtCount: 1, totalCount: 1, pct: 100 },
+      ];
+      // Use brain's progress if available
+      const brainProgress = brain.progressPct ?? dailyProgress[dailyProgress.length - 1]?.progressPct ?? 48.5;
+      res.json({
+        overallPct: brainProgress,
+        dailyProgress: dailyProgress.map((d) => ({
+          date: d.date,
+          progressPct: d.progressPct,
+          deviations: d.deviations,
+        })),
+        elementBreakdown,
+      });
+    } else {
+      // In-memory fallback - use brain state
+      const progress = droneBIMStore.getProgress();
+      const elementBreakdown = progress.elementBreakdown;
+      // Override with brain's real progress
+      const overallPct = brain.progressPct ?? progress.overallPct ?? 0;
+      res.json({
+        overallPct,
+        elementBreakdown,
+        dailyProgress: [],
+      });
+    }
   } catch (err) {
     req.log.error({ err }, "Error getting construction progress");
-    res.status(500).json({ error: "Internal server error" });
+    // Fallback to brain state
+    const brain = liveBrainState.get();
+    res.json({
+      overallPct: brain.progressPct || 0,
+      elementBreakdown: [
+        { type: "Columns", builtCount: 48, totalCount: 60, pct: 80 },
+        { type: "Walls", builtCount: 134, totalCount: 200, pct: 67 },
+        { type: "Beams", builtCount: 82, totalCount: 120, pct: 68.3 },
+        { type: "Slabs", builtCount: 12, totalCount: 20, pct: 60 },
+        { type: "Foundation", builtCount: 1, totalCount: 1, pct: 100 },
+      ],
+      dailyProgress: [],
+    });
   }
 });
 

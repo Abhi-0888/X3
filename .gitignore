@@ -55,3 +55,6 @@ brain/assets/trained/*.pt
 brain/venv/
 *.zip
 yolov8*.pt
+
+.vercel
+.env*.local

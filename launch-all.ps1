@@ -19,7 +19,7 @@ $ErrorActionPreference = "Stop"
 $host.ui.RawUI.WindowTitle = "AECI Launcher - All Modules"
 
 # Resolve paths
-$RootDir = Split-Path -Parent $PSScriptRoot
+$RootDir = $PSScriptRoot
 if (-not $RootDir) { $RootDir = $PWD.Path }
 
 Write-Host @"
@@ -61,6 +61,7 @@ Write-Host "    API Server: http://localhost:$($env:PORT)"
 Write-Host "    Dashboard:  http://localhost:$($env:PORT_DASHBOARD)"
 Write-Host "    Database:   $($env:DATABASE_URL -replace '://.*@', '://***@')"
 
+<#
 # Kill any existing processes on our ports
 Write-Host "`n[+] Cleaning up existing processes..." -ForegroundColor Green
 Get-NetTCPConnection -LocalPort 8080 -ErrorAction SilentlyContinue | ForEach-Object {
@@ -71,6 +72,7 @@ Get-NetTCPConnection -LocalPort 23753 -ErrorAction SilentlyContinue | ForEach-Ob
 }
 Get-Process -Name "python" -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -like "*brain.py*" } | Stop-Process -Force -ErrorAction SilentlyContinue
 Start-Sleep -Seconds 2
+#>
 
 # Process tracking
 $Processes = @()

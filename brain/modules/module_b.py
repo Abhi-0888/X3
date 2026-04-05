@@ -34,6 +34,7 @@ PPE_CLASSES = {
     "vest": ["vest", "hi_vis", "safety_vest", "high_visibility"],
     "person": ["person", "worker", "unsafe_worker"],
     "gloves": ["gloves", "safety_gloves"],
+    "waste": ["waste", "construction_waste", "debris", "material"],
 }
 
 @dataclass
@@ -86,28 +87,19 @@ class Guardian360:
     def _load_model(self, path: str):
         try:
             from ultralytics import YOLO
-            p = Path(path)
 
-            # Try trained model first, then custom path, then pretrained
-            trained_model = Path(__file__).parent.parent / "assets" / "trained" / "construction_ppe_yolov8.pt"
-            if trained_model.exists():
-                model_path = str(trained_model)
-                log.info(f"Using trained construction PPE model: {model_path}")
-            elif p.exists():
-                model_path = str(p)
-            else:
-                model_path = "yolov8n.pt"
-                log.warning(f"Custom YOLO weights not found at {path}. Using pretrained yolov8n.")
-
+            # Use pretrained yolov8n as baseline - detects persons reliably
+            model_path = "yolov8n.pt"
+            log.info(f"Using baseline YOLOv8n model: {model_path}")
+            
             self._model = YOLO(model_path)
-            log.info(f"YOLO model loaded: {model_path}")
-
+            log.info(f"YOLO model loaded successfully - detecting persons with region-based PPE analysis")
+            
             # Load PPE config if available
             self._load_ppe_config()
-        except ImportError:
-            log.error("ultralytics not installed. Run: pip install ultralytics")
         except Exception as e:
             log.error(f"Failed to load YOLO model: {e}")
+            self._model = None
 
     def _load_ppe_config(self):
         """Load the trained PPE detection configuration."""
@@ -189,6 +181,7 @@ class Guardian360:
         # Parse all detections into typed lists
         persons = []
         ppe_items = []
+        waste_items = []  # Track construction waste
 
         for box in boxes:
             cls_id = int(box.cls[0])
@@ -209,6 +202,8 @@ class Guardian360:
                 ppe_items.append({"type": "vest", "bbox": (x1, y1, x2, y2)})
             elif any(cls_name in labels for labels in [PPE_CLASSES["gloves"]]):
                 ppe_items.append({"type": "gloves", "bbox": (x1, y1, x2, y2)})
+            elif any(cls_name in labels for labels in [PPE_CLASSES["waste"]]):
+                waste_items.append({"track_id": track_id, "bbox": (x1, y1, x2, y2), "conf": conf})
 
         # ── PPE Association: link PPE items to persons ─────────────────────
         for person in persons:
@@ -287,22 +282,47 @@ class Guardian360:
             # ── Draw worker annotation ─────────────────────────────────────
             self._draw_worker(annotated, worker)
 
+        # ── Waste Detection Alerts ────────────────────────────────────────
+        for waste in waste_items:
+            alerts.append({
+                "type": "WASTE_DETECTED",
+                "severity": "medium",
+                "title": "Construction Waste Detected",
+                "message": f"Construction waste/material detected at site. Track ID: {waste['track_id']}",
+                "zone": "Current View",
+                "module": "B",
+                "waste_data": waste,
+            })
+
         # ── Safety score calculation ───────────────────────────────────────
         total = len(workers) or 1
         compliant = sum(1 for w in workers if w.is_compliant)
         ppe_score = (compliant / total) * 100
         zone_score = max(0, 100 - len(zone_breaches) * 20)
-        safety_score = ppe_score * 0.6 + zone_score * 0.4
+        waste_penalty = min(20, len(waste_items) * 5)
+        safety_score = ppe_score * 0.6 + zone_score * 0.4 - waste_penalty
 
-        self._draw_hud(annotated, safety_score, len(workers), len(violations))
+        # Log detection summary
+        if workers:
+            log.info(f"Module B: {len(workers)} workers detected, {len(violations)} violations, {len(zone_breaches)} zone breaches")
+
+        # Draw waste detections
+        for waste in waste_items:
+            x1, y1, x2, y2 = waste["bbox"]
+            cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 100, 200), 2)
+            cv2.putText(annotated, "WASTE", (x1, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 100, 200), 1, cv2.LINE_AA)
+
+        self._draw_hud(annotated, safety_score, len(workers), len(violations), len(waste_items))
 
         return {
             "annotated_frame": annotated,
             "workers": workers,
-            "safety_score": round(safety_score, 1),
+            "safety_score": round(max(0, safety_score), 1),
             "violations": violations,
             "zone_breaches": zone_breaches,
             "alerts": alerts,
+            "waste_detected": len(waste_items),
+            "waste_items": waste_items,
         }
 
     def _detect_ppe_by_region(self, frame: np.ndarray, person_bbox: tuple) -> tuple[bool, bool]:
@@ -428,12 +448,12 @@ class Guardian360:
             cv2.putText(frame, f"ZONE: {zone_name}", (pts[0][0] + 5, pts[0][1] + 18),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1, cv2.LINE_AA)
 
-    def _draw_hud(self, frame, safety_score, worker_count, violation_count):
+    def _draw_hud(self, frame, safety_score, worker_count, violation_count, waste_count=0):
         h, w = frame.shape[:2]
         overlay = frame.copy()
         cv2.rectangle(overlay, (0, h - 50), (w, h), (10, 10, 20), cv2.FILLED)
         cv2.addWeighted(overlay, 0.7, frame, 0.3, 0, frame)
         color = (50, 210, 50) if safety_score > 85 else (0, 165, 255) if safety_score > 70 else (0, 60, 220)
         cv2.putText(frame,
-                    f"MODULE B | SAFETY: {safety_score:.0f}% | WORKERS: {worker_count} | VIOLATIONS: {violation_count}",
+                    f"MODULE B | SAFETY: {max(0, safety_score):.0f}% | WORKERS: {worker_count} | VIOL: {violation_count} | WASTE: {waste_count}",
                     (10, h - 18), cv2.FONT_HERSHEY_SIMPLEX, 0.55, color, 1, cv2.LINE_AA)

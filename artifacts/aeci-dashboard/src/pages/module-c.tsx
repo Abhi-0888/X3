@@ -5,7 +5,7 @@ import {
   useListIdleAlerts, 
   useGetActivityTimeline,
   useGetWorker
-} from "@workspace/api-client-react";
+} from "../api-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -21,9 +21,9 @@ export default function ModuleCPage() {
   const { data: idleAlerts } = useListIdleAlerts({ query: { refetchInterval: 10000 } as any });
 
   const [selectedWorkerId, setSelectedWorkerId] = useState<number | null>(null);
-  const { data: selectedWorker } = useGetWorker(selectedWorkerId || 0, { 
-    query: { enabled: !!selectedWorkerId } as any
-  });
+  
+  // Find selected worker from the workers list
+  const selectedWorker = selectedWorkerId ? (Array.isArray(workers) ? workers : []).find((w: any) => w.trackId === selectedWorkerId || w.id === selectedWorkerId) : null;
 
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto pb-10">
@@ -115,40 +115,40 @@ export default function ModuleCPage() {
                 <div className="divide-y divide-border">
                   {(Array.isArray(workers) ? workers : []).map(worker => (
                     <div 
-                      key={worker.id} 
+                      key={worker.id || worker.trackId} 
                       className="p-4 flex items-center justify-between hover:bg-muted/30 cursor-pointer transition-colors"
-                      onClick={() => setSelectedWorkerId(worker.id)}
+                      onClick={() => setSelectedWorkerId(worker.trackId || worker.id)}
                     >
                       <div className="flex items-center gap-4">
                         <div className="relative">
                           <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center font-mono font-bold border border-border">
-                            {worker.name.split(' ').map(n=>n[0]).join('')}
+                            {(worker.name || `W${worker.trackId || worker.id}`).split(' ').map((n: string)=>n[0]).join('')}
                           </div>
                           <div className={cn(
                             "absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-card",
-                            worker.status === 'active' ? "bg-emerald-500" :
-                            worker.status === 'idle' ? "bg-amber-500" :
+                            worker.isIdle ? "bg-amber-500" :
+                            (worker.status === 'active' || !worker.isIdle) ? "bg-emerald-500" :
                             worker.status === 'break' ? "bg-blue-500" : "bg-slate-500"
                           )} />
                         </div>
                         <div>
-                          <div className="font-semibold text-sm">{worker.name}</div>
-                          <div className="text-xs text-muted-foreground">{worker.role} • {worker.zone}</div>
+                          <div className="font-semibold text-sm">{worker.name || `Worker-${String(worker.trackId || worker.id).padStart(3, '0')}`}</div>
+                          <div className="text-xs text-muted-foreground">{worker.role || 'Laborer'} • {worker.zone || 'Site'}</div>
                         </div>
                       </div>
                       
                       <div className="flex items-center gap-6">
                         <div className="text-right hidden sm:block">
                           <div className="text-xs text-muted-foreground">Efficiency</div>
-                          <div className="font-mono text-sm">{worker.efficiencyScore}%</div>
+                          <div className="font-mono text-sm">{worker.efficiencyScore || 0}%</div>
                         </div>
                         <div className="w-24 hidden md:block">
                           <div className="flex justify-between text-[10px] text-muted-foreground mb-1">
                             <span>Movement</span>
-                            <span>{worker.movementScore}</span>
+                            <span>{worker.movementScore || 0}</span>
                           </div>
                           <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                            <div className="h-full bg-info" style={{ width: `${worker.movementScore}%` }} />
+                            <div className="h-full bg-info" style={{ width: `${worker.movementScore || 0}%` }} />
                           </div>
                         </div>
                       </div>
@@ -223,11 +223,11 @@ export default function ModuleCPage() {
             <div className="space-y-6 pt-4">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center font-mono text-xl font-bold border-2 border-border">
-                  {selectedWorker.name.split(' ').map(n=>n[0]).join('')}
+                  {(selectedWorker.name || `W${selectedWorker.trackId || selectedWorker.id}`).split(' ').map((n: string)=>n[0]).join('')}
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold">{selectedWorker.name}</h3>
-                  <p className="text-muted-foreground">{selectedWorker.role} • {selectedWorker.zone}</p>
+                  <h3 className="text-xl font-bold">{selectedWorker.name || `Worker-${String(selectedWorker.trackId || selectedWorker.id).padStart(3, '0')}`}</h3>
+                  <p className="text-muted-foreground">{selectedWorker.role || 'Laborer'} • {selectedWorker.zone || 'Site'}</p>
                 </div>
               </div>
               
@@ -235,37 +235,26 @@ export default function ModuleCPage() {
                 <div className="bg-muted p-3 rounded-lg text-center">
                   <div className="text-xs text-muted-foreground">Status</div>
                   <div className={cn("font-bold capitalize mt-1", 
-                    selectedWorker.status === 'active' ? "text-emerald-500" :
-                    selectedWorker.status === 'idle' ? "text-amber-500" : "text-foreground"
-                  )}>{selectedWorker.status}</div>
+                    !selectedWorker.isIdle ? "text-emerald-500" :
+                    selectedWorker.isIdle ? "text-amber-500" : "text-foreground"
+                  )}>{selectedWorker.isIdle ? 'idle' : 'active'}</div>
                 </div>
                 <div className="bg-muted p-3 rounded-lg text-center">
                   <div className="text-xs text-muted-foreground">Efficiency</div>
-                  <div className="font-bold font-mono text-primary mt-1">{selectedWorker.efficiencyScore}%</div>
+                  <div className="font-bold font-mono text-primary mt-1">{selectedWorker.efficiencyScore || 0}%</div>
                 </div>
                 <div className="bg-muted p-3 rounded-lg text-center">
                   <div className="text-xs text-muted-foreground">PPE Status</div>
                   <div className={cn("font-bold capitalize mt-1",
-                    selectedWorker.ppeStatus === 'compliant' ? "text-emerald-500" : "text-destructive"
-                  )}>{selectedWorker.ppeStatus}</div>
+                    selectedWorker.ppeCompliant ? "text-emerald-500" : "text-destructive"
+                  )}>{selectedWorker.ppeCompliant ? 'compliant' : 'violating'}</div>
                 </div>
               </div>
 
               <div>
                 <h4 className="text-sm font-medium mb-3">Recent Activity</h4>
                 <div className="space-y-3">
-                  {(Array.isArray(selectedWorker.activityLog) ? selectedWorker.activityLog : []).slice(0,5).map((log, i) => (
-                    <div key={i} className="flex justify-between text-sm border-l-2 border-primary pl-3">
-                      <div>
-                        <div className="font-medium">{log.action}</div>
-                        <div className="text-xs text-muted-foreground">{new Date(log.time).toLocaleTimeString()}</div>
-                      </div>
-                      <div className="text-right font-mono">
-                        <div>{log.duration}m</div>
-                        <div className="text-xs text-info">Move: {log.movementScore}</div>
-                      </div>
-                    </div>
-                  ))}
+                  <div className="text-sm text-muted-foreground">Activity tracking coming soon...</div>
                 </div>
               </div>
             </div>

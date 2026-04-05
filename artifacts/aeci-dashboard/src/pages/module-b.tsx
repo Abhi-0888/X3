@@ -5,7 +5,7 @@ import {
   useListDangerZones, 
   useGetSafetyScore,
   useListZoneBreaches
-} from "@workspace/api-client-react";
+} from "../api-client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -97,24 +97,24 @@ export default function ModuleBPage() {
                       <TableCell colSpan={5} className="text-center text-muted-foreground h-24">No active violations</TableCell>
                     </TableRow>
                   ) : (
-                    ppeViolations.map(v => (
-                      <TableRow key={v.id}>
-                        <TableCell className="font-medium">{v.workerName}</TableCell>
+                    ppeViolations.map((v: any) => (
+                      <TableRow key={v.id || v.trackId}>
+                        <TableCell className="font-medium">{v.workerName || v.name || `Worker-${v.trackId || v.id}`}</TableCell>
                         <TableCell>
                           <div className="flex gap-1 flex-wrap">
-                            {v.missingItems.map(item => (
+                            {((v.missingItems || v.missing_items || [])).map((item: string) => (
                               <Badge key={item} variant="outline" className="text-[10px] capitalize border-destructive text-destructive">{item}</Badge>
                             ))}
                           </div>
                         </TableCell>
-                        <TableCell className="font-mono text-xs">{v.cameraName}</TableCell>
+                        <TableCell className="font-mono text-xs">{v.cameraName || v.camera || 'Camera 1'}</TableCell>
                         <TableCell>
                           <Badge variant={v.severity === 'critical' ? 'destructive' : 'secondary'}>
-                            {v.severity}
+                            {v.severity || 'medium'}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-muted-foreground text-xs font-mono">
-                          {new Date(v.detectedAt).toLocaleTimeString()}
+                          {v.detectedAt ? new Date(v.detectedAt).toLocaleTimeString() : v.timestamp ? new Date(v.timestamp).toLocaleTimeString() : 'Just now'}
                         </TableCell>
                       </TableRow>
                     ))

@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { useListAlerts, useAcknowledgeAlert } from "@workspace/api-client-react";
+import { 
+  useListAlerts, 
+  useAcknowledgeAlert,
+} from "../api-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

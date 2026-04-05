@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useListReports, useGenerateReport, useGetReport } from "@workspace/api-client-react";
+import { useListReports, useGenerateReport, useGetReport } from "../api-client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

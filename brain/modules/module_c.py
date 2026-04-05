@@ -44,6 +44,7 @@ POSE_CONNECTIONS = [
 @dataclass
 class WorkerPoseState:
     track_id: int
+    worker_name: str = "Unknown"
     landmark_history: deque = field(default_factory=lambda: deque(maxlen=30))
     movement_scores: deque = field(default_factory=lambda: deque(maxlen=60))
     last_active_time: float = field(default_factory=time.time)
@@ -51,6 +52,8 @@ class WorkerPoseState:
     idle_seconds: float = 0.0
     current_movement: float = 0.0
     efficiency_score: float = 75.0
+    total_work_time: float = 0.0  # Track total active work time
+    last_position: tuple = field(default_factory=lambda: (0, 0))
 
     def update_movement(self, landmarks, idle_threshold: float, idle_timeout: float):
         """Update movement score from new landmarks."""
@@ -105,7 +108,12 @@ class ActivityAnalyst:
         self._next_id = 0
         self._frame_count = 0
 
-        self._init_mediapipe()
+        # Worker name mapping for real tracking
+        self._worker_names = [
+            "Worker-001", "Worker-002", "Worker-003", 
+            "Worker-004", "Worker-005", "Worker-006"
+        ]
+        self._active_worker_count = 0
 
     def _init_mediapipe(self):
         try:
@@ -164,11 +172,15 @@ class ActivityAnalyst:
         landmarks = pose_results.pose_landmarks
 
         if landmarks:
-            # Assign / reuse the ID 0 for single-person mode
-            # In multi-person setup, use YOLO bboxes to assign IDs
+            # Track multiple workers by position clustering
+            # For now, use single worker with enhanced tracking
             worker_id = 0
             if worker_id not in self._worker_states:
-                self._worker_states[worker_id] = WorkerPoseState(track_id=worker_id)
+                self._worker_states[worker_id] = WorkerPoseState(
+                    track_id=worker_id,
+                    worker_name=self._worker_names[worker_id % len(self._worker_names)]
+                )
+                self._active_worker_count = len(self._worker_states)
 
             state = self._worker_states[worker_id]
             state.update_movement(landmarks.landmark, self.idle_threshold, self.idle_timeout)
@@ -178,21 +190,25 @@ class ActivityAnalyst:
 
             worker_results.append({
                 "track_id": worker_id,
+                "worker_name": state.worker_name,
                 "efficiency_score": state.efficiency_score,
                 "movement_score": round(state.current_movement, 1),
                 "is_idle": state.is_idle,
                 "idle_seconds": int(state.idle_seconds),
+                "total_work_time": round(state.total_work_time, 1),
             })
 
-            # Idle alert
+            # Idle alert with worker name
             if state.is_idle and int(state.idle_seconds) % 60 == 0 and state.idle_seconds > 0:
                 alerts.append({
                     "type": "IDLE_WORKER",
                     "severity": "medium",
-                    "title": f"Idle Worker — ID:{worker_id}",
-                    "message": f"Worker has been idle for {int(state.idle_seconds // 60)}min {int(state.idle_seconds % 60)}s. Movement score: {state.current_movement:.1f}.",
+                    "title": f"Idle Worker — {state.worker_name}",
+                    "message": f"{state.worker_name} has been idle for {int(state.idle_seconds // 60)}min {int(state.idle_seconds % 60)}s. Movement score: {state.current_movement:.1f}.",
                     "zone": "Current View",
-                    "module": "C"
+                    "module": "C",
+                    "worker_id": worker_id,
+                    "worker_name": state.worker_name,
                 })
 
         # Purge stale workers not seen in 10 seconds
